@@ -5,9 +5,7 @@ const UserService = require('./UserService');
 const validateUsername = (req, res, next) => {
   const user = req.body;
   if (!user.username) {
-    return res
-      .status(400)
-      .send({ validationErrors: { username: 'Username cannot be null.' } });
+    req.validationErrors = { username: 'Username cannot be null.' };
   }
   next();
 };
@@ -15,9 +13,10 @@ const validateUsername = (req, res, next) => {
 const validateEmail = (req, res, next) => {
   const user = req.body;
   if (!user.email) {
-    return res
-      .status(400)
-      .send({ validationErrors: { email: 'Email cannot be null.' } });
+    req.validationErrors = {
+      ...req.validationErrors,
+      email: 'Email cannot be null.',
+    };
   }
   next();
 };
@@ -27,6 +26,10 @@ router.post(
   validateUsername,
   validateEmail,
   async (req, res) => {
+    if (req.validationErrors) {
+      const response = { validationErrors: { ...req.validationErrors } };
+      return res.status(400).send(response);
+    }
     await UserService.save(req.body);
     return res.send({ message: 'User created' });
   }
