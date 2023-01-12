@@ -7,4 +7,8 @@ const save = async (body) => {
   User.create(user);
 };
 
-module.exports = { save };
+const findByEmail = async (email) => {
+  return await User.findOne({ where: { email: email } });
+};
+
+module.exports = { save, findByEmail };

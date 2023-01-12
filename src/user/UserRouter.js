@@ -27,7 +27,16 @@ router.post(
     .withMessage('Email cannot be null.')
     .bail()
     .isEmail()
-    .withMessage('Email is not valid.'),
+    .withMessage('Email is not valid.')
+    .bail()
+    .custom(async (email) => {
+      const user = await UserService.findByEmail(email);
+      if (user) {
+        console.log(user);
+        throw new Error('Email in use.');
+      }
+      return true;
+    }),
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

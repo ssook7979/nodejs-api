@@ -120,4 +120,18 @@ describe('User Registration', () => {
     const body = response.body;
     expect(body.validationErrors[field]).toBe(expectedMessage);
   });*/
+  // TODO: make it pass
+  it('returns Email in use when same email is already in use', async () => {
+    await postUser({ ...validUser });
+    const response = await postUser({ ...validUser });
+    expect(response.body.validationErrors.email).toBe('Email in use.');
+  });
+  it('returns errors for both username is null and email is in use', async () => {
+    const response = await postUser({
+      username: null,
+      email: validUser.email,
+      password: 'P4sword',
+    });
+    expect(response.body.validationErrors.email).toBe('Email in use.');
+  });
 });
