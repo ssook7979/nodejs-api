@@ -72,24 +72,33 @@ describe('User Registration', () => {
     expect(Object.keys(body.validationErrors)).toEqual(['username', 'email']);
   });
 
+  const username_null = 'Username cannot be null.';
+  const username_size = 'Must have min 4 and max 32 characters.';
+  const email_null = 'Email cannot be null.';
+  const email_invalid = 'Email is not valid.';
+  const password_null = 'Password cannot be null.';
+  const password_size = 'Password must be at least 6 characters.';
+  const password_invalid =
+    'Password must have at least 1 uppercase, 1 lowercase and 1 number.';
+
   it.each`
     field         | value               | expectedMessage
-    ${'username'} | ${null}             | ${'Username cannot be null.'}
-    ${'username'} | ${'usr'}            | ${'Must have min 4 and max 32 characters.'}
-    ${'username'} | ${'a'}              | ${'Must have min 4 and max 32 characters.'}
-    ${'email'}    | ${null}             | ${'Email cannot be null.'}
-    ${'email'}    | ${'email.com'}      | ${'Email is not valid.'}
-    ${'email'}    | ${'@email.com'}     | ${'Email is not valid.'}
-    ${'email'}    | ${'user.email.com'} | ${'Email is not valid.'}
-    ${'password'} | ${null}             | ${'Password cannot be null.'}
-    ${'password'} | ${'pass'}           | ${'Password must be at least 6 characters.'}
-    ${'password'} | ${'passpass'}       | ${'Password must have at least 1 uppercase, 1 lowercase and 1 number.'}
-    ${'password'} | ${'ALLUPPERCASE'}   | ${'Password must have at least 1 uppercase, 1 lowercase and 1 number.'}
-    ${'password'} | ${'12341234'}       | ${'Password must have at least 1 uppercase, 1 lowercase and 1 number.'}
-    ${'password'} | ${'lowerUpper'}     | ${'Password must have at least 1 uppercase, 1 lowercase and 1 number.'}
-    ${'password'} | ${'Upperlower'}     | ${'Password must have at least 1 uppercase, 1 lowercase and 1 number.'}
-    ${'password'} | ${'UPPER1234'}      | ${'Password must have at least 1 uppercase, 1 lowercase and 1 number.'}
-    ${'password'} | ${'lower1234'}      | ${'Password must have at least 1 uppercase, 1 lowercase and 1 number.'}
+    ${'username'} | ${null}             | ${username_null}
+    ${'username'} | ${'usr'}            | ${username_size}
+    ${'username'} | ${'a'}              | ${username_size}
+    ${'email'}    | ${null}             | ${email_null}
+    ${'email'}    | ${'email.com'}      | ${email_invalid}
+    ${'email'}    | ${'@email.com'}     | ${email_invalid}
+    ${'email'}    | ${'user.email.com'} | ${email_invalid}
+    ${'password'} | ${null}             | ${password_null}
+    ${'password'} | ${'pass'}           | ${password_size}
+    ${'password'} | ${'passpass'}       | ${password_invalid}
+    ${'password'} | ${'ALLUPPERCASE'}   | ${password_invalid}
+    ${'password'} | ${'12341234'}       | ${password_invalid}
+    ${'password'} | ${'lowerUpper'}     | ${password_invalid}
+    ${'password'} | ${'Upperlower'}     | ${password_invalid}
+    ${'password'} | ${'UPPER1234'}      | ${password_invalid}
+    ${'password'} | ${'lower1234'}      | ${password_invalid}
   `(
     `returns $expectedMessage when $field is invalid($value).`,
     async ({ field, value, expectedMessage }) => {
