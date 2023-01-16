@@ -37,7 +37,7 @@ describe('User Registration', () => {
 
   it('returns success message when signup is valid', async () => {
     const response = await postUser();
-    expect(response.body.message).toBe('User created.');
+    expect(response.body.message).toBe(en.user_create_success);
   });
 
   it('saves the user to database', async () => {
@@ -133,7 +133,7 @@ describe('User Registration', () => {
   it('returns Email in use when same email is already in use', async () => {
     await postUser({ ...validUser });
     const response = await postUser({ ...validUser });
-    expect(response.body.validationErrors.email).toBe('Email in use.');
+    expect(response.body.validationErrors.email).toBe(en.email_in_use);
   });
   it('returns errors for both username is null and email is in use', async () => {
     const response = await postUser({

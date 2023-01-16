@@ -30,7 +30,7 @@ router.post(
     .custom(async (email) => {
       const user = await UserService.findByEmail(email);
       if (user) {
-        throw new Error('Email in use.');
+        throw new Error('email_in_use');
       }
       return true;
     }),
