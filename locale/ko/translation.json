@@ -1,9 +1,9 @@
 {
-    "username_null": "Username cannot be null.",
-    "username_size": "Must have min 4 and max 32 characters.",
-    "email_null": "Email cannot be null.",
-    "email_invalid": "Email is not valid.",
-    "password_null": "Password cannot be null.",
-    "password_size": "Password must be at least 6 characters.",
-    "password_invalid": "Password must have at least 1 uppercase, 1 lowercase and 1 number."
+    "username_null": "Username은 null일 수 없습니다.",
+    "username_size": "최소 4자 이상 최대 32자 이하의 글자를 입력해주세요.",
+    "email_null": "Email은 null일 수 없습니다.",
+    "email_invalid": "Email이 유효하지 않습니다.",
+    "password_null": "Password는 null일 수 없습니다.",
+    "password_size": "Password는 적어도 6자 이상이어야 합니다.",
+    "password_invalid": "Password 형식은 영문 대소문자와 숫자 조합이어야 합니다."
 }
