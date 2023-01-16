@@ -227,4 +227,12 @@ describe('Internationalization', () => {
       expect(body.validationErrors[field]).toBe(expectedMessage);
     }
   );
+  it(`returns "${ko.email_failure}" when sending email fails`, async () => {
+    const mockSendAccountActivation = jest
+      .spyOn(EmailService, 'sendAccountActivation')
+      .mockRejectedValue({ message: 'Failed to deliver email' });
+    const response = await postUser({ ...validUser }, { language: 'ko' });
+    mockSendAccountActivation.mockRestore();
+    expect(response.body.message).toBe(ko.email_failure);
+  });
 });
