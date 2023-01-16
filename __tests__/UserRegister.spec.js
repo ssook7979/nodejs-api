@@ -2,6 +2,8 @@ const request = require('supertest');
 const app = require('../src/app');
 const User = require('../src/user/User');
 const sequelize = require('../src/config/database');
+const en = require('../locales/en/translation.json');
+const ko = require('../locales/ko/translation.json');
 
 beforeAll(() => {
   return sequelize.sync();
@@ -78,34 +80,24 @@ describe('User Registration', () => {
     expect(Object.keys(body.validationErrors)).toEqual(['username', 'email']);
   });
 
-  const username_null = 'Username cannot be null.';
-  const username_size = 'Must have min 4 and max 32 characters.';
-  const email_null = 'Email cannot be null.';
-  const email_invalid = 'Email is not valid.';
-  const password_null = 'Password cannot be null.';
-  const password_size = 'Password must be at least 6 characters.';
-  const password_invalid =
-    'Password must have at least 1 uppercase, 1 lowercase and 1 number.';
-  const user_create_success = 'User created.';
-
   it.each`
     field         | value               | expectedMessage
-    ${'username'} | ${null}             | ${username_null}
-    ${'username'} | ${'usr'}            | ${username_size}
-    ${'username'} | ${'a'}              | ${username_size}
-    ${'email'}    | ${null}             | ${email_null}
-    ${'email'}    | ${'email.com'}      | ${email_invalid}
-    ${'email'}    | ${'@email.com'}     | ${email_invalid}
-    ${'email'}    | ${'user.email.com'} | ${email_invalid}
-    ${'password'} | ${null}             | ${password_null}
-    ${'password'} | ${'pass'}           | ${password_size}
-    ${'password'} | ${'passpass'}       | ${password_invalid}
-    ${'password'} | ${'ALLUPPERCASE'}   | ${password_invalid}
-    ${'password'} | ${'12341234'}       | ${password_invalid}
-    ${'password'} | ${'lowerUpper'}     | ${password_invalid}
-    ${'password'} | ${'Upperlower'}     | ${password_invalid}
-    ${'password'} | ${'UPPER1234'}      | ${password_invalid}
-    ${'password'} | ${'lower1234'}      | ${password_invalid}
+    ${'username'} | ${null}             | ${en.username_null}
+    ${'username'} | ${'usr'}            | ${en.username_size}
+    ${'username'} | ${'a'}              | ${en.username_size}
+    ${'email'}    | ${null}             | ${en.email_null}
+    ${'email'}    | ${'email.com'}      | ${en.email_invalid}
+    ${'email'}    | ${'@email.com'}     | ${en.email_invalid}
+    ${'email'}    | ${'user.email.com'} | ${en.email_invalid}
+    ${'password'} | ${null}             | ${en.password_null}
+    ${'password'} | ${'pass'}           | ${en.password_size}
+    ${'password'} | ${'passpass'}       | ${en.password_invalid}
+    ${'password'} | ${'ALLUPPERCASE'}   | ${en.password_invalid}
+    ${'password'} | ${'12341234'}       | ${en.password_invalid}
+    ${'password'} | ${'lowerUpper'}     | ${en.password_invalid}
+    ${'password'} | ${'Upperlower'}     | ${en.password_invalid}
+    ${'password'} | ${'UPPER1234'}      | ${en.password_invalid}
+    ${'password'} | ${'lower1234'}      | ${en.password_invalid}
   `(
     `returns $expectedMessage when $field is invalid($value).`,
     async ({ field, value, expectedMessage }) => {
@@ -115,7 +107,7 @@ describe('User Registration', () => {
         password: 'P4ssword',
       };
       user[field] = value;
-      const response = await postUser(user, { language: 'en' });
+      const response = await postUser(user);
       const body = response.body;
       expect(body.validationErrors[field]).toBe(expectedMessage);
     }
@@ -153,7 +145,42 @@ describe('User Registration', () => {
     ]);
   });
   it('returns success message when signup is valid', async () => {
-    const response = await postUser({ ...validUser }, { language: 'en' });
-    expect(response.body.message).toBe(user_create_success);
+    const response = await postUser({ ...validUser }, { language: 'ko' });
+    expect(response.body.message).toBe(ko.user_create_success);
+  });
+
+  describe('Internationalization', () => {
+    it.each`
+      field         | value               | expectedMessage
+      ${'username'} | ${null}             | ${ko.username_null}
+      ${'username'} | ${'usr'}            | ${ko.username_size}
+      ${'username'} | ${'a'}              | ${ko.username_size}
+      ${'email'}    | ${null}             | ${ko.email_null}
+      ${'email'}    | ${'email.com'}      | ${ko.email_invalid}
+      ${'email'}    | ${'@email.com'}     | ${ko.email_invalid}
+      ${'email'}    | ${'user.email.com'} | ${ko.email_invalid}
+      ${'password'} | ${null}             | ${ko.password_null}
+      ${'password'} | ${'pass'}           | ${ko.password_size}
+      ${'password'} | ${'passpass'}       | ${ko.password_invalid}
+      ${'password'} | ${'ALLUPPERCASE'}   | ${ko.password_invalid}
+      ${'password'} | ${'12341234'}       | ${ko.password_invalid}
+      ${'password'} | ${'lowerUpper'}     | ${ko.password_invalid}
+      ${'password'} | ${'Upperlower'}     | ${ko.password_invalid}
+      ${'password'} | ${'UPPER1234'}      | ${ko.password_invalid}
+      ${'password'} | ${'lower1234'}      | ${ko.password_invalid}
+    `(
+      `returns $expectedMessage when $field is invalid($value).`,
+      async ({ field, value, expectedMessage }) => {
+        const user = {
+          username: 'user1',
+          email: 'user1@mail.com',
+          password: 'P4ssword',
+        };
+        user[field] = value;
+        const response = await postUser(user, { language: 'ko' });
+        const body = response.body;
+        expect(body.validationErrors[field]).toBe(expectedMessage);
+      }
+    );
   });
 });
