@@ -11,15 +11,21 @@ beforeEach(() => {
   return User.destroy({ truncate: true });
 });
 
+const validUser = {
+  username: 'user1',
+  email: 'user1@mail.com',
+  password: 'P4ssword',
+};
+
+const postUser = (user = validUser, options = {}) => {
+  const agent = request(app).post('/api/1.0/users');
+  if (options.language) {
+    agent.set('Accept-Language', options.language);
+  }
+  return agent.send(user);
+};
+
 describe('User Registration', () => {
-  const validUser = {
-    username: 'user1',
-    email: 'user1@mail.com',
-    password: 'P4ssword',
-  };
-  const postUser = (user = validUser) => {
-    return request(app).post('/api/1.0/users').send(user);
-  };
   it('returns 200 OK when signup request is valid', async () => {
     const response = await postUser();
     expect(response.status).toBe(200);
@@ -108,7 +114,7 @@ describe('User Registration', () => {
         password: 'P4ssword',
       };
       user[field] = value;
-      const response = await postUser(user);
+      const response = await postUser(user, { language: 'en' });
       const body = response.body;
       expect(body.validationErrors[field]).toBe(expectedMessage);
     }
@@ -129,7 +135,6 @@ describe('User Registration', () => {
     const body = response.body;
     expect(body.validationErrors[field]).toBe(expectedMessage);
   });*/
-  // TODO: make it pass
   it('returns Email in use when same email is already in use', async () => {
     await postUser({ ...validUser });
     const response = await postUser({ ...validUser });
