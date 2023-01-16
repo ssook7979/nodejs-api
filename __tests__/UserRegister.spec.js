@@ -141,6 +141,6 @@ describe('User Registration', () => {
       email: validUser.email,
       password: 'P4sword',
     });
-    expect(response.body.validationErrors.email).toBe('Email in use.');
+    expect(Object.keys(response.body.validationErrors)).toEqual([
   });
 });
