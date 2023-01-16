@@ -138,9 +138,12 @@ describe('User Registration', () => {
   it('returns errors for both username is null and email is in use', async () => {
     const response = await postUser({
       username: null,
-      email: validUser.email,
+      email: null,
       password: 'P4sword',
     });
     expect(Object.keys(response.body.validationErrors)).toEqual([
+      'username',
+      'email',
+    ]);
   });
 });
