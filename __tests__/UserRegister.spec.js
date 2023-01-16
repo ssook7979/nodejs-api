@@ -33,7 +33,7 @@ describe('User Registration', () => {
 
   it('returns success message when signup is valid', async () => {
     const response = await postUser();
-    expect(response.body.message).toBe('User created');
+    expect(response.body.message).toBe('User created.');
   });
 
   it('saves the user to database', async () => {
@@ -86,6 +86,7 @@ describe('User Registration', () => {
   const password_size = 'Password must be at least 6 characters.';
   const password_invalid =
     'Password must have at least 1 uppercase, 1 lowercase and 1 number.';
+  const user_create_success = 'User created.';
 
   it.each`
     field         | value               | expectedMessage
@@ -150,5 +151,9 @@ describe('User Registration', () => {
       'username',
       'email',
     ]);
+  });
+  it('returns success message when signup is valid', async () => {
+    const response = await postUser({ ...validUser }, { language: 'en' });
+    expect(response.body.message).toBe(user_create_success);
   });
 });
