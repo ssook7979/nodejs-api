@@ -1,11 +1,11 @@
-const emailTransporter = require('../config/emailTransporter');
+const transporter = require('../config/emailTransporter');
 
 const sendAccountActivation = async (email, token) => {
-  await emailTransporter.sendMail({
+  transporter.sendMail({
     from: 'My App <info@my-app.com>',
     to: email,
     subject: 'Account Activation',
-    html: `Token is ${token}`,
+    text: `Token is ${token}`,
   });
 };
 
