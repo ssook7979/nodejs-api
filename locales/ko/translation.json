@@ -8,5 +8,7 @@
     "password_invalid": "Password 형식은 영문 대소문자와 숫자 조합이어야 합니다.",
     "user_create_success": "사용자가 생성되었습니다.",
     "email_failure": "Email 전송에 실패했습니다.",
-    "email_in_use": "사용 중인 Email 입니다."
+    "email_in_use": "사용 중인 Email 입니다.",
+    "account_activation_failure": "이미 활성화된 계정이거나 token이 유효하지 않습니다.",
+    "account_activation_success": "계정이 활성화 되었습니다."
 }
