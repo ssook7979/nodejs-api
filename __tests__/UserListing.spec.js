@@ -2,7 +2,6 @@ const request = require('supertest');
 const app = require('../src/app');
 const User = require('../src/user/User');
 const sequelize = require('../src/config/database');
-const { describe } = require('yargs');
 const en = require('../locales/en/translation.json');
 const ko = require('../locales/ko/translation.json');
 
@@ -47,7 +46,7 @@ describe('Listing Users', () => {
     });
   });
   it('returns 10 users in page content when there are 11 users in database', async () => {
-    addUsers(11);
+    await addUsers(11);
     const response = await request(app).get('/api/1.0/users');
     expect(response.body.content.length).toBe(10);
   });
