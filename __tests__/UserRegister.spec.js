@@ -348,12 +348,12 @@ describe('Error Model', () => {
   it('returns path, timestamp, message and validationErrors in response when validation fails', async () => {
     const response = await postUser({ ...validUser, username: null });
     const body = response.body;
-    expect(Object.keys(body)).toEqual(
+    expect(Object.keys(body)).toEqual([
       'path',
       'timestamp',
       'message',
-      'validationErros'
-    );
+      'validationErrors',
+    ]);
   });
   it('returns path, timestamp and message in response when request fails other than validation', async () => {
     const token = 'this-token-does-not-exist';
@@ -362,7 +362,7 @@ describe('Error Model', () => {
       .send();
     const body = response.body;
     expect(response.status).toBe(400);
-    expect(Object.keys(body)).toEqual('path', 'timestamp', 'message');
+    expect(Object.keys(body)).toEqual(['path', 'timestamp', 'message']);
   });
   it('returns path in error body', async () => {
     const token = 'this-token-does-not-exist';
@@ -371,7 +371,7 @@ describe('Error Model', () => {
       .send();
     const body = response.body;
     expect(response.status).toBe(400);
-    expect(Object.keys(body)).toEqual('path', 'timestamp', 'message');
+    expect(Object.keys(body)).toEqual(['path', 'timestamp', 'message']);
   });
   it('returns timestamp in milliseconds within 5 seconds value in error body', async () => {
     const nowInMillis = new Date().getTime();
