@@ -25,7 +25,6 @@ beforeAll(async () => {
           err.responseCode = 553;
           return callback(err);
         }
-        console.log(mailBody);
         lastMail = mailBody;
         callback();
       });
@@ -34,7 +33,7 @@ beforeAll(async () => {
     },
   });
 
-  server.listen(8587, 'localhost');
+  server.listen(8587, '127.0.0.1');
   await sequelize.sync();
 });
 
@@ -228,13 +227,13 @@ describe('User Registration', () => {
     const users = await User.findAll();
     expect(users.length).toBe(0);
   });
-  it('returns Validation Failure message in error response body when validation falis', async () => {
+  it('returns Validation failure message in error response body when validation falis', async () => {
     const response = await postUser({
       username: null,
       email: validUser.email,
       password: 'P4ssword',
     });
-    expect(response.body.message).toBe('Validation Failure');
+    expect(response.body.message).toBe(en.validation_failure);
   });
 });
 
@@ -323,11 +322,11 @@ describe('Account activation', () => {
     language | tokenStatus  | message
     ${'ko'}  | ${'wrong'}   | ${ko.account_activation_failure}
     ${'en'}  | ${'wrong'}   | ${en.account_activation_failure}
-    ${'ko'}  | ${'correct'} | ${'test'}
-    ${'en'}  | ${'correct'} | ${'test'}
+    ${'ko'}  | ${'correct'} | ${ko.account_activation_success}
+    ${'en'}  | ${'correct'} | ${en.account_activation_success}
   `(
-    'returns $message when wrong token is sent and language is $language',
-    async (language, tokenStatus, message) => {
+    'returns $message when $tokenStatus token is sent and language is $language',
+    async ({ language, tokenStatus, message }) => {
       await postUser();
       let token;
       if (tokenStatus === 'correct') {
