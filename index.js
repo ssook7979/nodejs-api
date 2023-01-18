@@ -1,6 +1,6 @@
 const app = require('./src/app');
 const sequelize = require('./src/config/database');
-const User = require('../src/user/User');
+const User = require('./src/user/User');
 
 const addUsers = async (activeUserCount, inactiveUserCount = 0) => {
   for (let i = 0; i < activeUserCount + inactiveUserCount; i++) {
