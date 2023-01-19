@@ -1,5 +1,5 @@
 const request = require('supertest');
-const app = require('../src/app');
+const app = require('../src/app').default;
 const User = require('../src/user/User');
 const sequelize = require('../src/config/database');
 const bcrypt = require('bcrypt');

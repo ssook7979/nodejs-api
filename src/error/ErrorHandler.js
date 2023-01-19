@@ -1,4 +1,4 @@
-module.exports = (err, req, res, next) => {
+export default (err, req, res, next) => {
   const { status, message, errors } = err;
   let validationErrors;
   if (errors) {

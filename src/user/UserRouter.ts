@@ -1,9 +1,10 @@
-const express = require('express');
-const router = express.Router();
-const UserService = require('./UserService');
-const { check, validationResult } = require('express-validator');
-const ValidationExceptinon = require('../error/ValidationException');
-const pagination = require('../middleware/pagination');
+import { Router } from 'express';
+import { findByEmail, save, activate, getUsers, getUser } from './UserService';
+import { check, validationResult } from 'express-validator';
+import ValidationExceptinon from '../error/ValidationException';
+import pagination from '../middleware/pagination';
+
+const router = Router();
 
 router.post(
   '/api/1.0/users',
@@ -30,7 +31,7 @@ router.post(
     .withMessage('email_invalid')
     .bail()
     .custom(async (email) => {
-      const user = await UserService.findByEmail(email);
+      const user = await findByEmail(email);
       if (user) {
         throw new Error('email_in_use');
       }
@@ -46,7 +47,7 @@ router.post(
       return next(new ValidationExceptinon(errors.array()));
     }
     try {
-      await UserService.save(req.body);
+      await save(req.body);
       return res.send({ message: req.t('user_create_success') });
     } catch (err) {
       next(err);
@@ -57,7 +58,7 @@ router.post(
 router.post('/api/1.0/users/token/:token', async (req, res, next) => {
   const token = req.params.token;
   try {
-    await UserService.activate(token);
+    await activate(token);
     res.send({ message: req.t('account_activation_success') });
   } catch (err) {
     next(err);
@@ -66,17 +67,17 @@ router.post('/api/1.0/users/token/:token', async (req, res, next) => {
 
 router.get('/api/1.0/users', pagination, async (req, res) => {
   const { page, size } = req.pagination;
-  const users = await UserService.getUsers(page, size);
+  const users = await getUsers(page, size);
   res.send(users);
 });
 
 router.get('/api/1.0/users/:id', async (req, res, next) => {
   try {
-    const user = await UserService.getUser(req.params.id);
+    const user = await getUser(req.params.id);
     res.send(user);
   } catch (err) {
     next(err);
   }
 });
 
-module.exports = router;
+export default router;
