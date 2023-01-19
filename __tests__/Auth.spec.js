@@ -14,12 +14,14 @@ beforeEach(async () => {
   await User.destroy({ truncate: true });
 });
 
-const addUser = async () => {
-  const user = {
-    username: 'user1',
-    email: 'user1@mail.com',
-    password: 'P4ssword',
-  };
+const activeUser = {
+  username: 'user1',
+  email: 'user1@mail.com',
+  password: 'P4ssword',
+  inactive: false,
+};
+
+const addUser = async (user = { ...activeUser }) => {
   const hash = await bcrypt.hash(user.password, 10);
   user.password = hash;
   return await User.create(user);
@@ -93,6 +95,51 @@ describe('Authentication', () => {
       email: 'user1@mail.com',
       password: 'wrong-password',
     });
+    expect(response.status).toBe(401);
+  });
+  it('returns 403 when loggin in with an inactive account', async () => {
+    await addUser({ ...activeUser, inactive: true });
+    const response = await postAuthentication({
+      email: 'user1@mail.com',
+      password: 'P4ssword',
+    });
+    expect(response.status).toBe(403);
+  });
+  it('returns proper error body when loggin in with an inactive account', async () => {
+    await addUser({ ...activeUser, inactive: true });
+    const nowInMillis = new Date().getTime();
+    const response = await postAuthentication({
+      email: 'user1@mail.com',
+      password: 'P4ssword',
+    });
+    const error = response.body;
+    expect(error.path).toBe('/api/1.0/auth');
+    expect(error.timestamp).toBeGreaterThan(nowInMillis);
+    expect(Object.keys(error)).toEqual(['path', 'timestamp', 'message']);
+  });
+  it.each`
+    language | message
+    ${'en'}  | ${en.authentication_failure}
+    ${'ko'}  | ${ko.authentication_failure}
+  `(
+    `returns $message when authentication fails for inactive accountand language is set as $language`,
+    async ({ language, message }) => {
+      const response = await postAuthentication(
+        {
+          email: 'user1@mail.com',
+          password: 'wrong-password',
+        },
+        { language }
+      );
+      expect(response.body.message).toBe(message);
+    }
+  );
+  it('returns 401 when email is not valid', async () => {
+    const response = await postAuthentication({ password: 'P4ssword' });
+    expect(response.status).toBe(401);
+  });
+  it('returns 401 when password is not valid', async () => {
+    const response = await postAuthentication({ email: 'user1@mail.com' });
     expect(response.status).toBe(401);
   });
 });

@@ -13,5 +13,6 @@
     "account_activation_success": "계정이 활성화 되었습니다.",
     "validation_failure": "필드값이 유효하지 않습니다.",
     "user_not_found": "계정을 찾을 수 없습니다.",
-    "authentication_failure":"사용자 인증에 실패했습니다."
+    "authentication_failure":"사용자 인증에 실패했습니다.",
+    "inactive_authentication_failure": "사용자가 비활성화 상태입니다."
 }
