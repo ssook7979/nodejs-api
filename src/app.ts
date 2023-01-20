@@ -1,5 +1,4 @@
 import express, { json } from 'express';
-import i18n from './config/i18next';
 import { handle } from 'i18next-http-middleware';
 import UserRouter from './user/UserRouter';
 import AuthenticationRouter from './auth/AuthenticationRouter';
@@ -16,18 +15,17 @@ i18next
     fallbackLng: 'en',
     lng: 'en',
     ns: ['translation'],
-    defualtNS: 'translation',
+    defaultNS: 'translation',
     backend: {
-      loadPath: './locales/{{lng}}/{{ns}}.json',
+      loadPath: './locales/{{lng}}/{{ns}}.js',
     },
     detection: {
       lookupHeader: 'accept-language',
     },
   });
-
 const app = express();
 
-app.use(i18n);
+app.use(handle(i18next));
 
 app.use(json());
 
