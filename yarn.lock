@@ -991,6 +991,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/config@npm:^3.3.0":
+  version: 3.3.0
+  resolution: "@types/config@npm:3.3.0"
+  checksum: d9485041cfa05864d3b8095cf7b44fae910887f6782dc43ab1ba4ea78d9cdf4a8c9d697557318ede2b4b63a05b7f91e8571b8dbe048ad024e709d9e51e0487d8
+  languageName: node
+  linkType: hard
+
 "@types/connect@npm:*":
   version: 3.4.35
   resolution: "@types/connect@npm:3.4.35"
@@ -2639,6 +2646,7 @@ __metadata:
   resolution: "express-ws@workspace:."
   dependencies:
     "@types/bcrypt": ^5.0.0
+    "@types/config": ^3.3.0
     "@types/express": ^4.17.15
     "@types/i18next-fs-backend": ^1.1.2
     "@types/node": ^18.11.18

@@ -29,6 +29,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./",\
           "packageDependencies": [\
             ["@types/bcrypt", "npm:5.0.0"],\
+            ["@types/config", "npm:3.3.0"],\
             ["@types/express", "npm:4.17.15"],\
             ["@types/i18next-fs-backend", "npm:1.1.2"],\
             ["@types/node", "npm:18.11.18"],\
@@ -1488,6 +1489,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/keyv", "npm:3.1.4"],\
             ["@types/node", "npm:18.11.18"],\
             ["@types/responselike", "npm:1.0.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@types/config", [\
+        ["npm:3.3.0", {\
+          "packageLocation": "./.yarn/cache/@types-config-npm-3.3.0-bdb6fd80cb-d9485041cf.zip/node_modules/@types/config/",\
+          "packageDependencies": [\
+            ["@types/config", "npm:3.3.0"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -3539,6 +3549,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["express-ws", "workspace:."],\
             ["@types/bcrypt", "npm:5.0.0"],\
+            ["@types/config", "npm:3.3.0"],\
             ["@types/express", "npm:4.17.15"],\
             ["@types/i18next-fs-backend", "npm:1.1.2"],\
             ["@types/node", "npm:18.11.18"],\
