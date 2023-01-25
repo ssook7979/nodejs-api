@@ -1,4 +1,4 @@
-export class ValidationExceptinon {
+export default class ValidationExceptinon {
   message: string;
   status: number;
   errors: any; // TODO: declare ValidationError type

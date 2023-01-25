@@ -1,4 +1,4 @@
-export class InvalidTokenException {
+export default class InvalidTokenException {
   message: string;
   status: number;
 
