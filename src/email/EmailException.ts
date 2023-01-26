@@ -1,4 +1,6 @@
-export default class EmailException {
+import IException from '../error/IException';
+
+export default class EmailException implements IException {
   message: string;
   status: number;
 

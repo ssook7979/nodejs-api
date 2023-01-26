@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer';
 import transporter from '../config/emailTransporter';
 
-const sendAccountActivation = async (email: string, token: string) => {
+export const sendAccountActivation = async (email: string, token: string) => {
   const info = await transporter.sendMail({
     from: 'My App <info@my-app.com>',
     to: email,
@@ -19,5 +19,3 @@ const sendAccountActivation = async (email: string, token: string) => {
     console.log('url: ' + nodemailer.getTestMessageUrl(info));
   }
 };
-
-module.exports = { sendAccountActivation };

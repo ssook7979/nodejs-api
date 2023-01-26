@@ -1,10 +1,11 @@
-const express = require('express');
+import express from 'express';
+import bcrypt from 'bcrypt';
+import AuthenticationException from './AuthenticationException';
+import ForbiddenException from './ForbiddenException';
+import { check, validationResult } from 'express-validator';
+import UserService from '../user/UserService';
+
 const router = express.Router();
-const bcrypt = require('bcrypt');
-const UserService = require('../user/UserService').default;
-const AuthenticationException = require('./AuthenticationException');
-const ForbiddenException = require('./ForbiddenException');
-const { check, validationResult } = require('express-validator');
 
 router.post(
   '/api/1.0/auth',
@@ -30,4 +31,4 @@ router.post(
   }
 );
 
-module.exports = router;
+export default router;
