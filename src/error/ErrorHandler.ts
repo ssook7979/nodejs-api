@@ -15,6 +15,13 @@ type TValidationErrors = {
   [key: string]: string;
 } | null;
 
+type TErrorResponse = {
+  path: string;
+  timestamp: number;
+  message: string;
+  validationErrors?: TValidationErrors;
+};
+
 export default (err: any, req: any, res: any, next: any) => {
   const { status, message, errors }: TErrorObject = err;
   let validationErrors: TValidationErrors = null;
@@ -24,10 +31,13 @@ export default (err: any, req: any, res: any, next: any) => {
       (error) => (validationErrors![error.param] = req.t(error.msg))
     );
   }
-  res.status(status).send({
+  const response: TErrorResponse = {
     path: req.originalUrl,
     timestamp: new Date().getTime(),
     message: req.t(message),
-    validationErrors,
-  });
+  };
+  if (validationErrors?.length) {
+    response.validationErrors = validationErrors;
+  }
+  res.status(status).send(response);
 };

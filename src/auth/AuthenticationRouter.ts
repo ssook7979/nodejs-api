@@ -20,7 +20,7 @@ router.post(
     if (!user) {
       return next(new AuthenticationException());
     }
-    const match = await bcrypt.compare(password, user.password);
+    const match = await bcrypt.compare(password, user.password || '');
     if (!match) {
       return next(new AuthenticationException());
     }

@@ -1,17 +1,16 @@
 import i18next from 'i18next';
-import Backend from 'i18next-fs-backend';
+import FsBackend, { FsBackendOptions } from 'i18next-fs-backend';
 import { LanguageDetector } from 'i18next-http-middleware';
 
 i18next
-  .use(Backend)
+  .use(FsBackend)
   .use(LanguageDetector)
-  .init({
+  .init<FsBackendOptions>({
     fallbackLng: 'en',
     lng: 'en',
     ns: ['translation'],
-    defualtNS: 'translation',
     backend: {
-      loadPath: './locales/{{lng}}/{{ns}}.json',
+      loadPath: './locales/{{lng}}/translation.json',
     },
     detection: {
       lookupHeader: 'accept-language',

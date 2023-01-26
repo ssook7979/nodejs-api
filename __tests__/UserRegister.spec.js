@@ -1,10 +1,36 @@
-const request = require('supertest');
-const app = require('../src/app').default;
-const User = require('../src/user/User');
-const sequelize = require('../src/config/database');
-const en = require('../locales/en/translation.json');
-const ko = require('../locales/ko/translation.json');
-const SMTPServer = require('smtp-server').SMTPServer;
+import request from 'supertest';
+import app from '../src/app';
+import { destroy, findAll } from '../src/user/User';
+import { sync } from '../src/config/database';
+import {
+  user_create_success,
+  username_null,
+  username_size,
+  email_null,
+  email_invalid,
+  password_null,
+  password_size,
+  password_invalid,
+  email_in_use,
+  validation_failure,
+  account_activation_failure,
+  account_activation_success,
+} from '../locales/en/translation.json';
+import {
+  user_create_success as _user_create_success,
+  username_null as _username_null,
+  username_size as _username_size,
+  email_null as _email_null,
+  email_invalid as _email_invalid,
+  password_null as _password_null,
+  password_size as _password_size,
+  password_invalid as _password_invalid,
+  email_failure,
+  validation_failure as _validation_failure,
+  account_activation_failure as _account_activation_failure,
+  account_activation_success as _account_activation_success,
+} from '../locales/ko/translation.json';
+import { SMTPServer } from 'smtp-server';
 
 let lastMail, server;
 let simulateSmtpFailure = false;
@@ -34,12 +60,12 @@ beforeAll(async () => {
   });
 
   server.listen(8587, '127.0.0.1');
-  await sequelize.sync();
+  await sync();
 });
 
 beforeEach(async () => {
   simulateSmtpFailure = false;
-  await User.destroy({ truncate: true });
+  await destroy({ truncate: true });
 });
 
 afterAll(async () => {
@@ -68,18 +94,18 @@ describe('User Registration', () => {
 
   it('returns success message when signup is valid', async () => {
     const response = await postUser();
-    expect(response.body.message).toBe(en.user_create_success);
+    expect(response.body.message).toBe(user_create_success);
   });
 
   it('saves the user to database', async () => {
     await postUser();
-    const userList = await User.findAll();
+    const userList = await findAll();
     expect(userList.length).toBe(1);
   });
 
   it('saves the username and email to database', async () => {
     await postUser();
-    const userList = await User.findAll();
+    const userList = await findAll();
     const savedUser = userList[0];
     expect(userList.length).toBe(1);
     expect(savedUser.username).toBe('user1');
@@ -88,7 +114,7 @@ describe('User Registration', () => {
 
   it('hashes the password in database', async () => {
     await postUser();
-    const userList = await User.findAll();
+    const userList = await findAll();
     const savedUser = userList[0];
     expect(userList.length).toBe(1);
     expect(savedUser.password).not.toBe('P4ssword');
@@ -115,22 +141,22 @@ describe('User Registration', () => {
 
   it.each`
     field         | value               | expectedMessage
-    ${'username'} | ${null}             | ${en.username_null}
-    ${'username'} | ${'usr'}            | ${en.username_size}
-    ${'username'} | ${'a'}              | ${en.username_size}
-    ${'email'}    | ${null}             | ${en.email_null}
-    ${'email'}    | ${'email.com'}      | ${en.email_invalid}
-    ${'email'}    | ${'@email.com'}     | ${en.email_invalid}
-    ${'email'}    | ${'user.email.com'} | ${en.email_invalid}
-    ${'password'} | ${null}             | ${en.password_null}
-    ${'password'} | ${'pass'}           | ${en.password_size}
-    ${'password'} | ${'passpass'}       | ${en.password_invalid}
-    ${'password'} | ${'ALLUPPERCASE'}   | ${en.password_invalid}
-    ${'password'} | ${'12341234'}       | ${en.password_invalid}
-    ${'password'} | ${'lowerUpper'}     | ${en.password_invalid}
-    ${'password'} | ${'Upperlower'}     | ${en.password_invalid}
-    ${'password'} | ${'UPPER1234'}      | ${en.password_invalid}
-    ${'password'} | ${'lower1234'}      | ${en.password_invalid}
+    ${'username'} | ${null}             | ${username_null}
+    ${'username'} | ${'usr'}            | ${username_size}
+    ${'username'} | ${'a'}              | ${username_size}
+    ${'email'}    | ${null}             | ${email_null}
+    ${'email'}    | ${'email.com'}      | ${email_invalid}
+    ${'email'}    | ${'@email.com'}     | ${email_invalid}
+    ${'email'}    | ${'user.email.com'} | ${email_invalid}
+    ${'password'} | ${null}             | ${password_null}
+    ${'password'} | ${'pass'}           | ${password_size}
+    ${'password'} | ${'passpass'}       | ${password_invalid}
+    ${'password'} | ${'ALLUPPERCASE'}   | ${password_invalid}
+    ${'password'} | ${'12341234'}       | ${password_invalid}
+    ${'password'} | ${'lowerUpper'}     | ${password_invalid}
+    ${'password'} | ${'Upperlower'}     | ${password_invalid}
+    ${'password'} | ${'UPPER1234'}      | ${password_invalid}
+    ${'password'} | ${'lower1234'}      | ${password_invalid}
   `(
     `returns $expectedMessage when $field is invalid($value).`,
     async ({ field, value, expectedMessage }) => {
@@ -164,7 +190,7 @@ describe('User Registration', () => {
   it('returns Email in use when same email is already in use', async () => {
     await postUser({ ...validUser });
     const response = await postUser({ ...validUser });
-    expect(response.body.validationErrors.email).toBe(en.email_in_use);
+    expect(response.body.validationErrors.email).toBe(email_in_use);
   });
   it('returns errors for both username is null and email is in use', async () => {
     const response = await postUser({
@@ -179,30 +205,30 @@ describe('User Registration', () => {
   });
   it('returns success message when signup is valid', async () => {
     const response = await postUser({ ...validUser }, { language: 'ko' });
-    expect(response.body.message).toBe(ko.user_create_success);
+    expect(response.body.message).toBe(_user_create_success);
   });
   it('creates user in inactive mode', async () => {
     await postUser();
-    const users = await User.findAll();
+    const users = await findAll();
     const savedUser = users[0];
     expect(savedUser.inactive).toBe(true);
   });
   it('creates user in inactive mode even the request body contains inactive as false', async () => {
     await postUser({ ...validUser, inactive: false });
-    const users = await User.findAll();
+    const users = await findAll();
     const savedUser = users[0];
     expect(savedUser.inactive).toBe(true);
   });
   it('creates an activationToken for user', async () => {
     await postUser();
-    const users = await User.findAll();
+    const users = await findAll();
     const savedUser = users[0];
     expect(savedUser.activationToken).toBeTruthy();
   });
   it('sends an Account activation email with activationToken', async () => {
     await postUser();
 
-    const users = await User.findAll();
+    const users = await findAll();
     const savedUser = users[0];
     expect(lastMail).toContain('user1@mail.com');
     expect(lastMail).toContain(savedUser.activationToken);
@@ -224,7 +250,7 @@ describe('User Registration', () => {
   it('does not save user to database if activation email fails', async () => {
     simulateSmtpFailure = true;
     await postUser();
-    const users = await User.findAll();
+    const users = await findAll();
     expect(users.length).toBe(0);
   });
   it('returns Validation failure message in error response body when validation falis', async () => {
@@ -233,29 +259,29 @@ describe('User Registration', () => {
       email: validUser.email,
       password: 'P4ssword',
     });
-    expect(response.body.message).toBe(en.validation_failure);
+    expect(response.body.message).toBe(validation_failure);
   });
 });
 
 describe('Internationalization', () => {
   it.each`
     field         | value               | expectedMessage
-    ${'username'} | ${null}             | ${ko.username_null}
-    ${'username'} | ${'usr'}            | ${ko.username_size}
-    ${'username'} | ${'a'}              | ${ko.username_size}
-    ${'email'}    | ${null}             | ${ko.email_null}
-    ${'email'}    | ${'email.com'}      | ${ko.email_invalid}
-    ${'email'}    | ${'@email.com'}     | ${ko.email_invalid}
-    ${'email'}    | ${'user.email.com'} | ${ko.email_invalid}
-    ${'password'} | ${null}             | ${ko.password_null}
-    ${'password'} | ${'pass'}           | ${ko.password_size}
-    ${'password'} | ${'passpass'}       | ${ko.password_invalid}
-    ${'password'} | ${'ALLUPPERCASE'}   | ${ko.password_invalid}
-    ${'password'} | ${'12341234'}       | ${ko.password_invalid}
-    ${'password'} | ${'lowerUpper'}     | ${ko.password_invalid}
-    ${'password'} | ${'Upperlower'}     | ${ko.password_invalid}
-    ${'password'} | ${'UPPER1234'}      | ${ko.password_invalid}
-    ${'password'} | ${'lower1234'}      | ${ko.password_invalid}
+    ${'username'} | ${null}             | ${_username_null}
+    ${'username'} | ${'usr'}            | ${_username_size}
+    ${'username'} | ${'a'}              | ${_username_size}
+    ${'email'}    | ${null}             | ${_email_null}
+    ${'email'}    | ${'email.com'}      | ${_email_invalid}
+    ${'email'}    | ${'@email.com'}     | ${_email_invalid}
+    ${'email'}    | ${'user.email.com'} | ${_email_invalid}
+    ${'password'} | ${null}             | ${_password_null}
+    ${'password'} | ${'pass'}           | ${_password_size}
+    ${'password'} | ${'passpass'}       | ${_password_invalid}
+    ${'password'} | ${'ALLUPPERCASE'}   | ${_password_invalid}
+    ${'password'} | ${'12341234'}       | ${_password_invalid}
+    ${'password'} | ${'lowerUpper'}     | ${_password_invalid}
+    ${'password'} | ${'Upperlower'}     | ${_password_invalid}
+    ${'password'} | ${'UPPER1234'}      | ${_password_invalid}
+    ${'password'} | ${'lower1234'}      | ${_password_invalid}
   `(
     `returns $expectedMessage when $field is invalid($value).`,
     async ({ field, value, expectedMessage }) => {
@@ -270,12 +296,12 @@ describe('Internationalization', () => {
       expect(body.validationErrors[field]).toBe(expectedMessage);
     }
   );
-  it(`returns "${ko.email_failure}" when sending email fails`, async () => {
+  it(`returns "${email_failure}" when sending email fails`, async () => {
     simulateSmtpFailure = true;
     const response = await postUser({ ...validUser }, { language: 'ko' });
-    expect(response.body.message).toBe(ko.email_failure);
+    expect(response.body.message).toBe(email_failure);
   });
-  it(`returns "${ko.validation_failure}" message in error response body when validation falis`, async () => {
+  it(`returns "${_validation_failure}" message in error response body when validation falis`, async () => {
     const response = await postUser(
       {
         username: null,
@@ -284,30 +310,30 @@ describe('Internationalization', () => {
       },
       { language: 'ko' }
     );
-    expect(response.body.message).toBe(ko.validation_failure);
+    expect(response.body.message).toBe(_validation_failure);
   });
 });
 describe('Account activation', () => {
   it('activates the account when correct token is sent', async () => {
     await postUser();
-    let users = await User.findAll();
+    let users = await findAll();
     const token = users[0].activationToken;
 
     await request(app)
       .post('/api/1.0/users/token/' + token)
       .send();
-    users = await User.findAll();
+    users = await findAll();
     expect(users[0].inactive).toBe(false);
   });
   it('removes the token from user table after successful activation', async () => {
     await postUser();
-    let users = await User.findAll();
+    let users = await findAll();
     const token = users[0].activationToken;
 
     await request(app)
       .post('/api/1.0/users/token/' + token)
       .send();
-    users = await User.findAll();
+    users = await findAll();
     expect(users[0].activationToken).toBeFalsy();
   });
   it('returns bad request when token is wrong', async () => {
@@ -320,17 +346,17 @@ describe('Account activation', () => {
   });
   it.each`
     language | tokenStatus  | message
-    ${'ko'}  | ${'wrong'}   | ${ko.account_activation_failure}
-    ${'en'}  | ${'wrong'}   | ${en.account_activation_failure}
-    ${'ko'}  | ${'correct'} | ${ko.account_activation_success}
-    ${'en'}  | ${'correct'} | ${en.account_activation_success}
+    ${'ko'}  | ${'wrong'}   | ${_account_activation_failure}
+    ${'en'}  | ${'wrong'}   | ${account_activation_failure}
+    ${'ko'}  | ${'correct'} | ${_account_activation_success}
+    ${'en'}  | ${'correct'} | ${account_activation_success}
   `(
     'returns $message when $tokenStatus token is sent and language is $language',
     async ({ language, tokenStatus, message }) => {
       await postUser();
       let token;
       if (tokenStatus === 'correct') {
-        let users = await User.findAll();
+        let users = await findAll();
         token = users[0].activationToken;
       } else {
         token = 'this-token-does-not-exist';

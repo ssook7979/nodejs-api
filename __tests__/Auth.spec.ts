@@ -1,10 +1,11 @@
-const request = require('supertest');
-const app = require('../src/app').default;
-const User = require('../src/user/User');
-const sequelize = require('../src/config/database');
-const bcrypt = require('bcrypt');
-const en = require('../locales/en/translation.json');
-const ko = require('../locales/ko/translation.json');
+import { describe, expect, test, beforeAll, beforeEach } from '@jest/globals';
+import request from 'supertest';
+import app from '../src/app';
+import User from '../src/user/User';
+import sequelize from '../src/config/database';
+import { hash as _hash } from 'bcrypt';
+import en from '../locales/en/translation.json';
+import ko from '../locales/ko/translation.json';
 
 beforeAll(async () => {
   await sequelize.sync();
@@ -22,12 +23,15 @@ const activeUser = {
 };
 
 const addUser = async (user = { ...activeUser }) => {
-  const hash = await bcrypt.hash(user.password, 10);
+  const hash = await _hash(user.password, 10);
   user.password = hash;
   return await User.create(user);
 };
 
-const postAuthentication = async (credentials, options = {}) => {
+const postAuthentication = async (
+  credentials: { email?: string; password?: string },
+  options: { language?: string } = {}
+) => {
   const agent = request(app).post('/api/1.0/auth');
   if (options.language) {
     agent.set({ 'Accept-Language': options.language });
@@ -36,7 +40,7 @@ const postAuthentication = async (credentials, options = {}) => {
 };
 
 describe('Authentication', () => {
-  it('returns 200 when credentials are correct', async () => {
+  test('returns 200 when credentials are correct', async () => {
     await addUser();
     const response = await postAuthentication({
       email: 'user1@mail.com',
@@ -44,7 +48,7 @@ describe('Authentication', () => {
     });
     expect(response.status).toBe(200);
   });
-  it('returns only user id and username when login success', async () => {
+  test('returns only user id and username when login success', async () => {
     const user = await addUser();
     const response = await postAuthentication({
       email: 'user1@mail.com',
@@ -54,7 +58,7 @@ describe('Authentication', () => {
     expect(response.body.username).toBe(user.username);
     expect(Object.keys(response.body)).toEqual(['id', 'username']);
   });
-  it('returns 401 when user does not exist', async () => {
+  test('returns 401 when user does not exist', async () => {
     await addUser();
     const response = await postAuthentication({
       email: 'user2@mail.com',
@@ -62,7 +66,7 @@ describe('Authentication', () => {
     });
     expect(response.status).toBe(401);
   });
-  it('returns proper error body when authentication fails', async () => {
+  test('returns proper error body when authentication fails', async () => {
     const nowInMillis = new Date().getTime();
     const response = await postAuthentication({
       email: 'user1@mail.com',
@@ -71,9 +75,10 @@ describe('Authentication', () => {
     const error = response.body;
     expect(error.path).toBe('/api/1.0/auth');
     expect(error.timestamp).toBeGreaterThan(nowInMillis);
+    console.log(error);
     expect(Object.keys(error)).toEqual(['path', 'timestamp', 'message']);
   });
-  it.each`
+  test.each`
     language | message
     ${'en'}  | ${en.authentication_failure}
     ${'ko'}  | ${ko.authentication_failure}
@@ -90,14 +95,14 @@ describe('Authentication', () => {
       expect(response.body.message).toBe(message);
     }
   );
-  it('returns 401 when password is wrong', async () => {
+  test('returns 401 when password is wrong', async () => {
     const response = await postAuthentication({
       email: 'user1@mail.com',
       password: 'wrong-password',
     });
     expect(response.status).toBe(401);
   });
-  it('returns 403 when loggin in with an inactive account', async () => {
+  test('returns 403 when loggin in with an inactive account', async () => {
     await addUser({ ...activeUser, inactive: true });
     const response = await postAuthentication({
       email: 'user1@mail.com',
@@ -105,7 +110,7 @@ describe('Authentication', () => {
     });
     expect(response.status).toBe(403);
   });
-  it('returns proper error body when loggin in with an inactive account', async () => {
+  test('returns proper error body when loggin in with an inactive account', async () => {
     await addUser({ ...activeUser, inactive: true });
     const nowInMillis = new Date().getTime();
     const response = await postAuthentication({
@@ -117,7 +122,7 @@ describe('Authentication', () => {
     expect(error.timestamp).toBeGreaterThan(nowInMillis);
     expect(Object.keys(error)).toEqual(['path', 'timestamp', 'message']);
   });
-  it.each`
+  test.each`
     language | message
     ${'en'}  | ${en.authentication_failure}
     ${'ko'}  | ${ko.authentication_failure}
@@ -134,12 +139,16 @@ describe('Authentication', () => {
       expect(response.body.message).toBe(message);
     }
   );
-  it('returns 401 when email is not valid', async () => {
-    const response = await postAuthentication({ password: 'P4ssword' });
+  test('returns 401 when email is not valid', async () => {
+    const response = await postAuthentication({
+      password: 'P4ssword',
+    });
     expect(response.status).toBe(401);
   });
-  it('returns 401 when password is not valid', async () => {
-    const response = await postAuthentication({ email: 'user1@mail.com' });
+  test('returns 401 when password is not valid', async () => {
+    const response = await postAuthentication({
+      email: 'user1@mail.com',
+    });
     expect(response.status).toBe(401);
   });
 });

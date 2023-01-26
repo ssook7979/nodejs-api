@@ -10,7 +10,7 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare id: number | null;
   declare username: string;
   declare email: string;
-  declare password: string;
+  declare password: string | null;
   declare inactive: boolean | null;
   declare activationToken: string | null;
 }
