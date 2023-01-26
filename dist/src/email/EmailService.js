@@ -12,6 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.sendAccountActivation = void 0;
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const emailTransporter_1 = __importDefault(require("../config/emailTransporter"));
 const sendAccountActivation = (email, token) => __awaiter(void 0, void 0, void 0, function* () {
@@ -32,4 +33,4 @@ const sendAccountActivation = (email, token) => __awaiter(void 0, void 0, void 0
         console.log('url: ' + nodemailer_1.default.getTestMessageUrl(info));
     }
 });
-module.exports = { sendAccountActivation };
+exports.sendAccountActivation = sendAccountActivation;

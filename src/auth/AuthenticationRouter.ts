@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import AuthenticationException from './AuthenticationException';
 import ForbiddenException from './ForbiddenException';
 import { check, validationResult } from 'express-validator';
-import UserService from '../user/UserService';
+import { findByEmail } from '../user/UserService';
 
 const router = express.Router();
 
@@ -16,7 +16,7 @@ router.post(
       return next(new AuthenticationException());
     }
     const { email, password } = req.body;
-    const user = await UserService.findByEmail(email);
+    const user = await findByEmail(email);
     if (!user) {
       return next(new AuthenticationException());
     }

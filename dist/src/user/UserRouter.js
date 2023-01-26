@@ -78,7 +78,7 @@ router.get('/api/1.0/users', pagination_1.default, (req, res) => __awaiter(void 
 }));
 router.get('/api/1.0/users/:id', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const user = yield (0, UserService_1.getUser)(req.params.id);
+        const user = yield (0, UserService_1.getUser)(parseInt(req.params.id));
         res.send(user);
     }
     catch (err) {

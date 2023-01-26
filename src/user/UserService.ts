@@ -71,4 +71,4 @@ const getUser = async (id: number) => {
   return user;
 };
 
-export default { save, findByEmail, activate, getUsers, getUser };
+export { save, findByEmail, activate, getUsers, getUser };

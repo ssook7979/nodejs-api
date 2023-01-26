@@ -5,6 +5,7 @@
     "main": "App.js",
     "scripts": {
         "start": "cross-env NODE_ENV=development nodemon index",
+        "start1": "concurrently \"yarn tsc --watch\" \"cross-env NODE_ENV=development nodemon -q dist/index.js\"",
         "test": "cross-env NODE_ENV=test jest --watch",
         "lint": "eslint . --fix"
     },
@@ -26,10 +27,11 @@
     "devDependencies": {
         "@types/bcrypt": "^5.0.0",
         "@types/config": "^3.3.0",
-        "@types/express": "^4.17.15",
+        "@types/express": "^4.17.16",
         "@types/i18next-fs-backend": "^1.1.2",
         "@types/node": "^18.11.18",
         "@types/nodemailer": "^6.4.7",
+        "concurrently": "^7.6.0",
         "cross-env": "^7.0.3",
         "eslint": "^8.31.0",
         "eslint-config-prettier": "^8.6.0",

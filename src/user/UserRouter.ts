@@ -1,8 +1,8 @@
-import { Router } from 'express';
+import { Request, Response, Router } from 'express';
 import { findByEmail, save, activate, getUsers, getUser } from './UserService';
 import { check, validationResult } from 'express-validator';
 import ValidationExceptinon from '../error/ValidationException';
-import pagination from '../middleware/pagination';
+import pagination, { TPagination } from '../middleware/pagination';
 
 const router = Router();
 
@@ -40,7 +40,7 @@ router.post(
   async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      const validationErrors = {};
+      const validationErrors = {} as { [key: string]: any };
       errors.array().forEach((error) => {
         validationErrors[error.param] = req.t(error.msg);
       });
@@ -65,15 +65,23 @@ router.post('/api/1.0/users/token/:token', async (req, res, next) => {
   }
 });
 
-router.get('/api/1.0/users', pagination, async (req, res) => {
-  const { page, size } = req.pagination;
-  const users = await getUsers(page, size);
-  res.send(users);
-});
+export interface ListRequest extends Request {
+  pagination: TPagination;
+}
 
-router.get('/api/1.0/users/:id', async (req, res, next) => {
+router.get(
+  '/api/1.0/users',
+  pagination,
+  async (req: Request, res: Response) => {
+    const { page, size } = req.pagination;
+    const users = await getUsers(page, size);
+    res.send(users);
+  }
+);
+
+router.get('/api/1.0/users/:id', async (req: Request, res: Response, next) => {
   try {
-    const user = await getUser(req.params.id);
+    const user = await getUser(parseInt(req.params.id));
     res.send(user);
   } catch (err) {
     next(err);

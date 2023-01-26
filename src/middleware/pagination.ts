@@ -1,4 +1,9 @@
-const pagination = (req, res, next) => {
+export type TPagination = {
+  page: number;
+  size: number;
+};
+
+const pagination = (req: any, res: any, next: any) => {
   const pageAsNumber = Number.parseInt(req.query.page);
   const sizeAsNumber = Number.parseInt(req.query.size);
 
@@ -14,4 +19,4 @@ const pagination = (req, res, next) => {
   next();
 };
 
-module.exports = pagination;
+export default pagination;
