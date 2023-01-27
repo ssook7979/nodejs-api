@@ -6,6 +6,7 @@ export default class ValidationExceptinon implements IException {
   message: string; // TODO: declare ValidationError type
 
   constructor(errors: any) {
+    console.log(errors);
     this.status = 400;
     this.errors = errors;
     this.message = 'validation_failure';

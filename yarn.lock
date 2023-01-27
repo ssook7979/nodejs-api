@@ -1261,7 +1261,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/nodemailer@npm:^6.4.7":
+"@types/nodemailer@npm:*, @types/nodemailer@npm:^6.4.7":
   version: 6.4.7
   resolution: "@types/nodemailer@npm:6.4.7"
   dependencies:
@@ -1314,6 +1314,16 @@ __metadata:
     "@types/mime": "*"
     "@types/node": "*"
   checksum: b6ac93d471fb0f53ddcac1f9b67572a09cd62806f7db5855244b28f6f421139626f24799392566e97d1ffc61b12f9de7f30380c39fcae3c8a161fe161d44edf2
+  languageName: node
+  linkType: hard
+
+"@types/smtp-server@npm:^3.5.7":
+  version: 3.5.7
+  resolution: "@types/smtp-server@npm:3.5.7"
+  dependencies:
+    "@types/node": "*"
+    "@types/nodemailer": "*"
+  checksum: fb84bbffceccde500eaae353a1c4df939e752e3956b01942df8a97b67b29ae593214262673ca18a1b63e11c43683f683547df7d36aca327677539dc9691196e4
   languageName: node
   linkType: hard
 
@@ -2855,6 +2865,7 @@ __metadata:
     "@types/i18next-fs-backend": ^1.1.2
     "@types/node": ^18.11.18
     "@types/nodemailer": ^6.4.7
+    "@types/smtp-server": ^3.5.7
     "@types/supertest": ^2.0.12
     "@yarnpkg/pnpify": ^4.0.0-rc.36
     bcrypt: ^5.1.0

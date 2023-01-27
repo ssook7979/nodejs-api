@@ -31,6 +31,7 @@
         "@types/i18next-fs-backend": "^1.1.2",
         "@types/node": "^18.11.18",
         "@types/nodemailer": "^6.4.7",
+        "@types/smtp-server": "^3.5.7",
         "@types/supertest": "^2.0.12",
         "concurrently": "^7.6.0",
         "cross-env": "^7.0.3",
@@ -80,12 +81,19 @@
             "jest-watch-typeahead/testname"
         ],
         "verbose": true,
-        "roots": ["<rootDir>"],
+        "roots": [
+            "<rootDir>"
+        ],
         "transform": {
             "^.+\\.ts?$": "ts-jest"
         },
         "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.ts?$",
-        "moduleFileExtensions": ["ts", "js", "json", "node"],
+        "moduleFileExtensions": [
+            "ts",
+            "js",
+            "json",
+            "node"
+        ],
         "collectCoverage": true,
         "clearMocks": true,
         "coverageDirectory": "coverage"

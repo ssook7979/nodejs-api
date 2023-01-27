@@ -35,6 +35,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/i18next-fs-backend", "npm:1.1.2"],\
             ["@types/node", "npm:18.11.18"],\
             ["@types/nodemailer", "npm:6.4.7"],\
+            ["@types/smtp-server", "npm:3.5.7"],\
             ["@types/supertest", "npm:2.0.12"],\
             ["@yarnpkg/pnpify", "npm:4.0.0-rc.36"],\
             ["bcrypt", "npm:5.1.0"],\
@@ -1845,6 +1846,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/serve-static", "npm:1.15.0"],\
             ["@types/mime", "npm:3.0.1"],\
             ["@types/node", "npm:18.11.18"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@types/smtp-server", [\
+        ["npm:3.5.7", {\
+          "packageLocation": "./.yarn/cache/@types-smtp-server-npm-3.5.7-0ccb4ab9c2-fb84bbffce.zip/node_modules/@types/smtp-server/",\
+          "packageDependencies": [\
+            ["@types/smtp-server", "npm:3.5.7"],\
+            ["@types/node", "npm:18.11.18"],\
+            ["@types/nodemailer", "npm:6.4.7"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -3756,6 +3768,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/i18next-fs-backend", "npm:1.1.2"],\
             ["@types/node", "npm:18.11.18"],\
             ["@types/nodemailer", "npm:6.4.7"],\
+            ["@types/smtp-server", "npm:3.5.7"],\
             ["@types/supertest", "npm:2.0.12"],\
             ["@yarnpkg/pnpify", "npm:4.0.0-rc.36"],\
             ["bcrypt", "npm:5.1.0"],\
