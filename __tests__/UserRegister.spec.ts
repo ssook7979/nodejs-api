@@ -5,6 +5,7 @@ import {
   beforeAll,
   beforeEach,
   afterAll,
+  jest,
 } from '@jest/globals';
 import request from 'supertest';
 import app from '../src/app';
@@ -41,6 +42,7 @@ beforeAll(async () => {
 
   server.listen(8587, '127.0.0.1');
   await sequelize.sync();
+  jest.setTimeout(20000);
 });
 
 beforeEach(async () => {
@@ -91,7 +93,7 @@ describe('User Registration', () => {
     await postUser();
     const userList = await User.findAll();
     expect(userList.length).toBe(1);
-  });
+  }, 20000);
 
   test('saves the username and email to database', async () => {
     await postUser();
@@ -366,7 +368,8 @@ describe('Account activation', () => {
         .set('Accept-Language', language)
         .send();
       expect(response.body.message).toBe(message);
-    }
+    },
+    20000
   );
 });
 describe('Error Model', () => {

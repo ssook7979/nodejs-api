@@ -3,6 +3,10 @@ import { findByEmail, save, activate, getUsers, getUser } from './UserService';
 import { check, validationResult } from 'express-validator';
 import ValidationExceptinon from '../error/ValidationException';
 import pagination, { TPagination } from '../middleware/pagination';
+import ForbiddenException from '../auth/ForbiddenException';
+import * as UserService from '../user/UserService';
+import bcrypt from 'bcrypt';
+import User from './User';
 
 const router = Router();
 
@@ -88,4 +92,31 @@ router.get('/api/1.0/users/:id', async (req: Request, res: Response, next) => {
   }
 });
 
+router.put('/api/1.0/users/:id', async (req: Request, res: Response, next) => {
+  const authorization = req.headers.authorization;
+  if (authorization) {
+    const encoded = authorization.substring(6);
+    const decoded = Buffer.from(encoded, 'base64').toString('ascii');
+    const [email, password] = decoded.split(':');
+    const user = await UserService.findByEmail(email);
+    if (!user) {
+      return next(new ForbiddenException('unauthorized_user_update'));
+    }
+    if (user.id !== parseInt(req.params.id)) {
+      return next(new ForbiddenException('unauthorized_user_update'));
+    }
+    if (user.inactive) {
+      return next(new ForbiddenException('unauthorized_user_update'));
+    }
+
+    const match = await bcrypt.compare(password, user.password || '');
+    if (!match) {
+      return next(new ForbiddenException('unauthorized_user_update'));
+    }
+
+    await UserService.updateUser(req.params.id, req.body);
+    return res.send();
+  }
+  return next(new ForbiddenException('unauthorized_user_update'));
+});
 export default router;

@@ -71,4 +71,16 @@ const getUser = async (id: number) => {
   return user;
 };
 
-export { save, findByEmail, activate, getUsers, getUser };
+const updateUser = async (id: string, updatedBody: Partial<User>) => {
+  const user = await User.findOne({ where: { id } });
+  if (!user) {
+    throw new UserNotFoundException();
+  }
+  if (updatedBody.username) {
+    user.username = updatedBody.username;
+    console.log('HERE', user);
+    await user.save();
+  }
+};
+
+export { save, findByEmail, activate, getUsers, getUser, updateUser };

@@ -75,7 +75,6 @@ describe('Authentication', () => {
     const error = response.body;
     expect(error.path).toBe('/api/1.0/auth');
     expect(error.timestamp).toBeGreaterThan(nowInMillis);
-    console.log(error);
     expect(Object.keys(error)).toEqual(['path', 'timestamp', 'message']);
   });
   test.each`
