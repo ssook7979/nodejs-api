@@ -1,6 +1,7 @@
 import User from './User';
 import { hash as _hash } from 'bcrypt';
 import { randomBytes } from 'crypto';
+import { Op } from 'sequelize';
 import { sendAccountActivation } from '../email/EmailService';
 import sequelize from '../config/database';
 import EmailException from '../email/EmailException';
@@ -45,9 +46,16 @@ const activate = async (token: string) => {
   await user.save();
 };
 
-const getUsers = async (page: number, size: number) => {
+const getUsers = async (
+  page: number,
+  size: number,
+  authenticatedUser?: User
+) => {
   const usersWithCount = await User.findAndCountAll({
-    where: { inactive: false },
+    where: {
+      inactive: false,
+      id: { [Op.not]: authenticatedUser ? authenticatedUser.id : 0 },
+    },
     attributes: ['id', 'username', 'email'],
     limit: size,
     offset: page * size,
@@ -78,7 +86,6 @@ const updateUser = async (id: string, updatedBody: Partial<User>) => {
   }
   if (updatedBody.username) {
     user.username = updatedBody.username;
-    console.log('HERE', user);
     await user.save();
   }
 };

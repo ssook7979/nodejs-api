@@ -41,7 +41,7 @@ beforeAll(async () => {
   });
 
   server.listen(8587, '127.0.0.1');
-  await sequelize.sync();
+  await sequelize.sync().finally(() => console.log('closed'));
   jest.setTimeout(20000);
 });
 
@@ -52,6 +52,7 @@ beforeEach(async () => {
 
 afterAll(async () => {
   await server.close();
+  jest.setTimeout(5000);
 });
 
 const validUser = {
@@ -93,7 +94,7 @@ describe('User Registration', () => {
     await postUser();
     const userList = await User.findAll();
     expect(userList.length).toBe(1);
-  }, 20000);
+  });
 
   test('saves the username and email to database', async () => {
     await postUser();
@@ -368,8 +369,7 @@ describe('Account activation', () => {
         .set('Accept-Language', language)
         .send();
       expect(response.body.message).toBe(message);
-    },
-    20000
+    }
   );
 });
 describe('Error Model', () => {

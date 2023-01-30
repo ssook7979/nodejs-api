@@ -1,5 +1,6 @@
 import { describe, expect, test, beforeAll, beforeEach } from '@jest/globals';
 import request from 'supertest';
+import bcrypt from 'bcrypt';
 import app from '../src/app';
 import User from '../src/user/User';
 import sequelize from '../src/config/database';
@@ -14,16 +15,23 @@ beforeEach(async () => {
   await User.destroy({ truncate: true });
 });
 
-const getUsers = () => {
-  return request(app).get('/api/1.0/users');
+const getUsers = (options: any = {}) => {
+  const agent = request(app).get('/api/1.0/users');
+  if (options.auth) {
+    const { email, password } = options.auth;
+    agent.auth(email, password);
+  }
+  return agent.send();
 };
 
 const addUsers = async (activeUserCount: number, inactiveUserCount = 0) => {
+  const hash = await bcrypt.hash('P4ssword', 10);
   for (let i = 0; i < activeUserCount + inactiveUserCount; i++) {
     await User.create({
       username: `user${i + 1}`,
       email: `user${i + 1}@mail.com`,
       inactive: i >= activeUserCount,
+      password: hash,
     });
   }
 };
@@ -150,5 +158,12 @@ describe('Get User', () => {
     });
     const response = await getUser(user.id);
     expect(response.status).toBe(404);
+  });
+  test('returns user page without logged in user when request has valid authentication', async () => {
+    await addUsers(11);
+    const response = await getUsers({
+      auth: { email: 'user1@mail.com', password: 'P4ssword' },
+    });
+    expect(response.body.totalPages).toBe(1);
   });
 });
