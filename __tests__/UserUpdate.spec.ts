@@ -53,6 +53,7 @@ beforeEach(async () => {
 
 afterAll(async () => {
   await server.close();
+  jest.setTimeout(5000);
 });
 
 const activeUser = {
@@ -67,7 +68,7 @@ const putUser = async (
   body: any = null,
   options: any = {}
 ): Promise<any> => {
-  const agent = request(app).put('/api/1.0/users/5');
+  const agent = request(app).put('/api/1.0/users/' + id);
   if (options.language) {
     agent.set('Accept-Language', options.language);
   }
@@ -151,7 +152,7 @@ describe('User update', () => {
     const savedUser = await addUser();
     const validUpdate = { username: 'user1-updated' };
     const response = await putUser(savedUser.id, validUpdate, {
-      auth: { email: 'user1@mail', password: 'P4ssword' },
+      auth: { email: 'user1@mail.com', password: 'P4ssword' },
     });
 
     const inDBUser = await User.findOne({ where: { id: savedUser.id } });

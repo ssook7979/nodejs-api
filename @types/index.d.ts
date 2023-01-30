@@ -4,5 +4,6 @@ declare namespace Express {
     params: {
       id: number;
     };
+    authenticatedUser?: User;
   }
 }
