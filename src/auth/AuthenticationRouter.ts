@@ -4,6 +4,7 @@ import AuthenticationException from './AuthenticationException';
 import ForbiddenException from './ForbiddenException';
 import { check, validationResult } from 'express-validator';
 import { findByEmail } from '../user/UserService';
+import * as TokenService from './TokenService';
 
 const router = express.Router();
 
@@ -27,7 +28,12 @@ router.post(
     if (user.inactive) {
       return next(new ForbiddenException());
     }
-    res.send({ id: user.id, username: user.username });
+
+    res.send({
+      id: user.id,
+      username: user.username,
+      token: TokenService.createToken(user),
+    });
   }
 );
 

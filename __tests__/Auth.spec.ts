@@ -48,7 +48,7 @@ describe('Authentication', () => {
     });
     expect(response.status).toBe(200);
   });
-  test('returns only user id and username when login success', async () => {
+  test('returns only user id, username and token when login success', async () => {
     const user = await addUser();
     const response = await postAuthentication({
       email: 'user1@mail.com',
@@ -56,7 +56,7 @@ describe('Authentication', () => {
     });
     expect(response.body.id).toBe(user.id);
     expect(response.body.username).toBe(user.username);
-    expect(Object.keys(response.body)).toEqual(['id', 'username']);
+    expect(Object.keys(response.body)).toEqual(['id', 'username', 'token']);
   });
   test('returns 401 when user does not exist', async () => {
     await addUser();
@@ -149,5 +149,13 @@ describe('Authentication', () => {
       email: 'user1@mail.com',
     });
     expect(response.status).toBe(401);
+  });
+  test('returns token in response body when credentials are correct', async () => {
+    const user = await addUser();
+    const response = await postAuthentication({
+      email: 'user1@mail.com',
+      password: 'P4ssword',
+    });
+    expect(response.body.token).not.toBe(undefined);
   });
 });

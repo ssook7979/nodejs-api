@@ -5,7 +5,7 @@ import ValidationExceptinon from '../error/ValidationException';
 import pagination, { TPagination } from '../middleware/pagination';
 import ForbiddenException from '../auth/ForbiddenException';
 import * as UserService from '../user/UserService';
-import basicAuthentication from '../middleware/basicAuthentication';
+import tokenAuthentication from '../middleware/tokenAutentication';
 
 const router = Router();
 
@@ -75,7 +75,7 @@ export interface ListRequest extends Request {
 router.get(
   '/api/1.0/users',
   pagination,
-  basicAuthentication,
+  tokenAuthentication,
   async (req: Request, res: Response) => {
     const authenticatedUser = req.authenticatedUser;
     const { page, size } = req.pagination;
@@ -94,7 +94,7 @@ router.get('/api/1.0/users/:id', async (req: Request, res: Response, next) => {
 });
 router.put(
   '/api/1.0/users/:id',
-  basicAuthentication,
+  tokenAuthentication,
   async (req: Request, res: Response, next) => {
     const authenticatedUser = req.authenticatedUser;
     if (

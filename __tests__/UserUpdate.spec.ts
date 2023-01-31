@@ -14,34 +14,10 @@ import User from '../src/user/User';
 import sequelize from '../src/config/database';
 import en from '../locales/en/translation.json';
 import ko from '../locales/ko/translation.json';
-import { SMTPServer } from 'smtp-server';
 
-let lastMail: string, server: SMTPServer;
 let simulateSmtpFailure = false;
 
 beforeAll(async () => {
-  server = new SMTPServer({
-    secure: false,
-    authOptional: true,
-    onData(stream, session, callback) {
-      let mailBody: string;
-      stream.on('data', (data) => {
-        mailBody += data.toString();
-      });
-      stream.on('end', () => {
-        if (simulateSmtpFailure) {
-          const err = new Error('invalid mailbox');
-          return callback(err);
-        }
-        lastMail = mailBody;
-        callback();
-      });
-      stream.on('error', (e) => console.log(e));
-      stream.on('connect', (info) => console.log(info));
-    },
-  });
-
-  server.listen(8587, '127.0.0.1');
   await sequelize.sync();
   jest.setTimeout(20000);
 });
@@ -52,7 +28,6 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
-  await server.close();
   jest.setTimeout(5000);
 });
 
@@ -68,19 +43,19 @@ const putUser = async (
   body: any = null,
   options: any = {}
 ): Promise<any> => {
+  let token;
+  if (options.auth) {
+    const response = await request(app)
+      .post('/api/1.0/auth')
+      .send(options.auth);
+    token = response.body.token;
+  }
   const agent = request(app).put('/api/1.0/users/' + id);
   if (options.language) {
     agent.set('Accept-Language', options.language);
   }
-  if (options.auth) {
-    const { email, password } = options.auth;
-    /*
-     * manually...
-    const merged = `${email}:${password}`;
-    const base64 = Buffer.from(merged).toString('base64');
-    agent.set('Authorization', base64);
-    */
-    agent.auth(email, password);
+  if (token) {
+    agent.set('Authorization', `Bearer ${token}`);
   }
   return await agent.send(body);
 };
@@ -157,5 +132,9 @@ describe('User update', () => {
 
     const inDBUser = await User.findOne({ where: { id: savedUser.id } });
     expect(inDBUser?.username).toBe(validUpdate.username);
+  });
+  test('returns 403 when token is not valid', async () => {
+    const response = await putUser(5, null, { token: '1234' });
+    expect(response.status).toBe(403);
   });
 });

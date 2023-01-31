@@ -7,3 +7,9 @@ declare namespace Express {
     authenticatedUser?: User;
   }
 }
+
+declare namespace JsonWebToken {
+  interface JwtPayload {
+    id: number;
+  }
+}

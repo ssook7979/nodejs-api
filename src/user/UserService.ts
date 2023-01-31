@@ -7,10 +7,7 @@ import sequelize from '../config/database';
 import EmailException from '../email/EmailException';
 import InvalidTokenException from './InvalidTokenException';
 import UserNotFoundException from './UserNotFoundException';
-
-const generateToken = (length: number) => {
-  return randomBytes(length).toString('hex').substring(0, length);
-};
+import randomString from '../shared/generator';
 
 const save = async (body: Partial<User>) => {
   const { username, email, password } = body;
@@ -19,7 +16,7 @@ const save = async (body: Partial<User>) => {
     username,
     email,
     password: hash,
-    activationToken: generateToken(10),
+    activationToken: randomString(10),
   } as User;
   const transaction = await sequelize.transaction();
   await User.create(user, { transaction });

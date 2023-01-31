@@ -41,7 +41,7 @@ beforeAll(async () => {
   });
 
   server.listen(8587, '127.0.0.1');
-  await sequelize.sync().finally(() => console.log('closed'));
+  await sequelize.sync().finally();
   jest.setTimeout(20000);
 });
 
