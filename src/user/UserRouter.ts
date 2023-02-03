@@ -5,6 +5,7 @@ import ValidationExceptinon from '../error/ValidationException';
 import pagination, { TPagination } from '../middleware/pagination';
 import ForbiddenException from '../auth/ForbiddenException';
 import * as UserService from '../user/UserService';
+import * as TokenService from '../auth/TokenService';
 import tokenAuthentication from '../middleware/tokenAutentication';
 
 const router = Router();
@@ -105,6 +106,24 @@ router.put(
     }
     await UserService.updateUser(req.params.id, req.body);
     return res.send();
+  }
+);
+router.delete(
+  '/api/1.0/users/:id',
+  tokenAuthentication,
+  async (req: Request, res: Response, next) => {
+    const authenticatedUser = req.authenticatedUser;
+    if (
+      !authenticatedUser ||
+      authenticatedUser.id !== parseInt(req.params.id)
+    ) {
+      return next(new ForbiddenException('unauthorized_user_delete'));
+    }
+    await UserService.deleteUser(req.params.id);
+    const authorization = req.headers.authorization;
+    const token = authorization?.substring(7);
+    if (token) await TokenService.deleteToken(token);
+    res.send();
   }
 );
 

@@ -8,6 +8,7 @@ import EmailException from '../email/EmailException';
 import InvalidTokenException from './InvalidTokenException';
 import UserNotFoundException from './UserNotFoundException';
 import randomString from '../shared/generator';
+import * as TokenService from '../auth/TokenService';
 
 const save = async (body: Partial<User>) => {
   const { username, email, password } = body;
@@ -87,4 +88,16 @@ const updateUser = async (id: string, updatedBody: Partial<User>) => {
   }
 };
 
-export { save, findByEmail, activate, getUsers, getUser, updateUser };
+const deleteUser = async (id: string) => {
+  await User.destroy({ where: { id } });
+};
+
+export {
+  save,
+  findByEmail,
+  activate,
+  getUsers,
+  getUser,
+  updateUser,
+  deleteUser,
+};

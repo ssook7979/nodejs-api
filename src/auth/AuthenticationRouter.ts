@@ -32,9 +32,17 @@ router.post(
     res.send({
       id: user.id,
       username: user.username,
-      token: TokenService.createToken(user),
+      token: await TokenService.createToken(user),
     });
   }
 );
+router.post('/api/1.0/logout', async (req, res) => {
+  const authorization = req.headers.authorization;
+  if (authorization) {
+    const token = authorization.substring(7);
+    await TokenService.deleteToken(token);
+  }
+  res.send();
+});
 
 export default router;
