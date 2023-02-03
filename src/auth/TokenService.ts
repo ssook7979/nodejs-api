@@ -3,6 +3,8 @@ import User from '../user/User';
 import Token from './Token';
 import { Op } from 'sequelize';
 
+const ONE_WEEK_IN_MILLIS = 7 * 24 * 60 * 60 * 1000;
+
 const createToken = async (user: Partial<User>) => {
   if (!user.id) return;
   const token = randomString(32);
@@ -15,7 +17,7 @@ const createToken = async (user: Partial<User>) => {
 };
 
 const verify = async (token: string) => {
-  const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  const oneWeekAgo = new Date(Date.now() - ONE_WEEK_IN_MILLIS);
   const tokenInDB = await Token.findOne({
     where: { token, lastUsedAt: { [Op.gt]: oneWeekAgo } },
   });
@@ -36,4 +38,17 @@ const deleteTokenByUserId = async (userId: string) => {
   console.log(userId, await Token.findAll({ where: { userId } }));
 };
 
-export { createToken, verify, deleteToken, deleteTokenByUserId };
+const scheduledCleanup = () => {
+  setInterval(async () => {
+    const oneWeekAgo = new Date(Date.now() - ONE_WEEK_IN_MILLIS);
+    await Token.destroy({ where: { lastUsedAt: { [Op.lt]: oneWeekAgo } } });
+  }, 60 * 60 * 1000);
+};
+
+export {
+  createToken,
+  verify,
+  deleteToken,
+  deleteTokenByUserId,
+  scheduledCleanup,
+};

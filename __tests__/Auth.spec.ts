@@ -230,7 +230,7 @@ describe('Token Expiration', () => {
     const validUpdate = { username: 'user1-updated' };
     const rightBeforeSendingRequest = new Date();
     if (savedUser.id) {
-      const response = await putUser(savedUser.id, validUpdate, { token });
+      await putUser(savedUser.id, validUpdate, { token });
       const tokenInDB = await Token.findOne({ where: { token } });
       expect(tokenInDB?.lastUsedAt.getTime()).toBeGreaterThan(
         rightBeforeSendingRequest.getTime()
@@ -248,7 +248,6 @@ describe('Token Expiration', () => {
       userId: savedUser.id,
       lastUsedAt: fourDaysAgo,
     });
-    const validUpdate = { username: 'user1-updated' };
     const rightBeforeSendingRequest = new Date();
     if (savedUser.id) {
       const response = await request(app)
