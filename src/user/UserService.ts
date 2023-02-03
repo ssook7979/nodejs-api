@@ -1,14 +1,12 @@
 import User from './User';
 import { hash as _hash } from 'bcrypt';
-import { randomBytes } from 'crypto';
 import { Op } from 'sequelize';
 import { sendAccountActivation } from '../email/EmailService';
 import sequelize from '../config/database';
 import EmailException from '../email/EmailException';
 import InvalidTokenException from './InvalidTokenException';
-import UserNotFoundException from './UserNotFoundException';
 import randomString from '../shared/generator';
-import * as TokenService from '../auth/TokenService';
+import NotFoundException from '../error/NotFoundException';
 
 const save = async (body: Partial<User>) => {
   const { username, email, password } = body;
@@ -72,7 +70,7 @@ const getUser = async (id: number) => {
     attributes: ['id', 'username', 'email'],
   });
   if (!user) {
-    throw new UserNotFoundException();
+    throw new NotFoundException('user_not_found');
   }
   return user;
 };
@@ -80,7 +78,7 @@ const getUser = async (id: number) => {
 const updateUser = async (id: string, updatedBody: Partial<User>) => {
   const user = await User.findOne({ where: { id } });
   if (!user) {
-    throw new UserNotFoundException();
+    throw new NotFoundException('user_not_found');
   }
   if (updatedBody.username) {
     user.username = updatedBody.username;
