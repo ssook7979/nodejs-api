@@ -14,6 +14,7 @@ class Token extends Model<
 > {
   declare token: string;
   declare userId: ForeignKey<User['id']>;
+  declare lastUsedAt: Date;
 }
 
 Token.init(
@@ -21,8 +22,11 @@ Token.init(
     token: {
       type: DataTypes.STRING,
     },
+    lastUsedAt: {
+      type: DataTypes.DATE,
+    },
   },
-  { sequelize, modelName: 'token' }
+  { sequelize, modelName: 'token', timestamps: false }
 );
 
 export default Token;

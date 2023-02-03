@@ -1,7 +1,7 @@
-import jwt from 'jsonwebtoken';
 import randomString from '../shared/generator';
 import User from '../user/User';
 import Token from './Token';
+import { Op } from 'sequelize';
 
 const createToken = async (user: Partial<User>) => {
   if (!user.id) return;
@@ -9,15 +9,22 @@ const createToken = async (user: Partial<User>) => {
   await Token.create({
     token,
     userId: user.id,
+    lastUsedAt: new Date(),
   });
   return token;
 };
 
 const verify = async (token: string) => {
-  const tokenInDB = await Token.findOne({ where: { token } });
-
-  const userId = tokenInDB?.userId;
-  return { id: userId };
+  const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  const tokenInDB = await Token.findOne({
+    where: { token, lastUsedAt: { [Op.gt]: oneWeekAgo } },
+  });
+  if (tokenInDB) {
+    tokenInDB.lastUsedAt = new Date();
+    tokenInDB.save();
+    const userId = tokenInDB?.userId;
+    return { id: userId };
+  }
 };
 
 const deleteToken = async (token: string) => {

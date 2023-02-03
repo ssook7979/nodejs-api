@@ -4,12 +4,15 @@ import UserRouter from './user/UserRouter';
 import AuthenticationRouter from './auth/AuthenticationRouter';
 import ErrorHandler from './error/ErrorHandler';
 import i18next from './config/i18next';
+import tokenAuthentication from './middleware/tokenAutentication';
 
 const app = express();
 
 app.use(handle(i18next));
 
 app.use(json());
+
+app.use(tokenAuthentication);
 
 app.use(UserRouter);
 app.use(AuthenticationRouter);
