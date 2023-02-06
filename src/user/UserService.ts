@@ -7,6 +7,7 @@ import EmailException from '../email/EmailException';
 import InvalidTokenException from './InvalidTokenException';
 import randomString from '../shared/generator';
 import NotFoundException from '../error/NotFoundException';
+import * as EmailService from '../email/EmailService';
 
 const save = async (body: Partial<User>) => {
   const { username, email, password } = body;
@@ -90,6 +91,16 @@ const deleteUser = async (id: string) => {
   await User.destroy({ where: { id } });
 };
 
+const passwordResetRequest = async (email: string) => {
+  const user = await findByEmail(email);
+  if (!user) {
+    throw new NotFoundException('email_not_inuse');
+  }
+  user.passwordResetToken = randomString(16);
+  await user.save();
+  await EmailService.sendPasswordReset(email, user.passwordResetToken);
+};
+
 export {
   save,
   findByEmail,
@@ -98,4 +109,5 @@ export {
   getUser,
   updateUser,
   deleteUser,
+  passwordResetRequest,
 };

@@ -6,7 +6,6 @@ import pagination, { TPagination } from '../middleware/pagination';
 import ForbiddenException from '../auth/ForbiddenException';
 import * as UserService from '../user/UserService';
 import * as TokenService from '../auth/TokenService';
-import NotFoundException from '../error/NotFoundException';
 
 const router = Router();
 
@@ -120,12 +119,17 @@ router.delete(
 router.post(
   '/api/1.0/password-reset',
   check('email').isEmail().withMessage('email_invalid'),
-  (req: Request, res: Response, next) => {
+  async (req: Request, res: Response, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return next(new ValidationExceptinon(errors.array()));
     }
-    throw new NotFoundException('email_not_inuse');
+    try {
+      await UserService.passwordResetRequest(req.body.email);
+      res.send({ message: req.t('password_reset_request_success') });
+    } catch (err) {
+      next(err);
+    }
   }
 );
 
