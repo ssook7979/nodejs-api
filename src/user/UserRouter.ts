@@ -6,6 +6,7 @@ import pagination, { TPagination } from '../middleware/pagination';
 import ForbiddenException from '../auth/ForbiddenException';
 import * as UserService from '../user/UserService';
 import * as TokenService from '../auth/TokenService';
+import User from './User';
 
 const router = Router();
 
@@ -43,10 +44,6 @@ router.post(
   async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      const validationErrors = {} as { [key: string]: any };
-      errors.array().forEach((error) => {
-        validationErrors[error.param] = req.t(error.msg);
-      });
       return next(new ValidationExceptinon(errors.array()));
     }
     try {
@@ -130,6 +127,44 @@ router.post(
     } catch (err) {
       next(err);
     }
+  }
+);
+
+const passwordResetTokenValidator = async (
+  req: Request,
+  res: Response,
+  next: any
+) => {
+  const user = await User.findOne({
+    where: { passwordResetToken: req.body.passwordResetToken },
+  });
+  if (!user) {
+    return next(new ForbiddenException('unauthorized_password_reset'));
+  }
+  next();
+};
+
+router.put(
+  '/api/1.0/user/password',
+  passwordResetTokenValidator,
+  check('password')
+    .notEmpty()
+    .withMessage('password_null')
+    .bail()
+    .isLength({ min: 6 })
+    .withMessage('password_size')
+    .bail()
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$/)
+    .withMessage('password_invalid'),
+  async (req: Request, res: Response, next) => {
+    const user = await User.findOne({
+      where: { passwordResetToken: req.body.passwordResetToken },
+    });
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return next(new ValidationExceptinon(errors.array()));
+    }
+    res.send();
   }
 );
 
