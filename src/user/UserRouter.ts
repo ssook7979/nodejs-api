@@ -117,7 +117,7 @@ router.delete(
   }
 );
 router.post(
-  '/api/1.0/password-reset',
+  '/api/1.0/user/password',
   check('email').isEmail().withMessage('email_invalid'),
   async (req: Request, res: Response, next) => {
     const errors = validationResult(req);

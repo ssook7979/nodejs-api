@@ -74,7 +74,7 @@ const postPasswordReset = async (
   email = 'user1@mail.com',
   options: any = {}
 ) => {
-  const agent = request(app).post('/api/1.0/password-reset');
+  const agent = request(app).post('/api/1.0/user/password');
   if (options.language) {
     agent.set('Accept-Language', options.language);
   }
@@ -95,7 +95,7 @@ describe('Password Reset Request', () => {
     async ({ language, message }) => {
       const nowInMillis = new Date().getTime();
       const response = await postPasswordReset('user1@mail.com', { language });
-      expect(response.body.path).toBe('/api/1.0/password-reset');
+      expect(response.body.path).toBe('/api/1.0/user/password');
       expect(response.body.timestamp).toBeGreaterThan(nowInMillis);
       expect(response.body.message).toBe(message);
     }
