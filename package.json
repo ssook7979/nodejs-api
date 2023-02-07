@@ -99,7 +99,11 @@
         ],
         "collectCoverage": true,
         "clearMocks": true,
-        "coverageDirectory": "coverage"
+        "coverageDirectory": "coverage",
+        "testPathIgnorePatterns": [
+            "<rootDir>/config/",
+            "<rootDir>/dist/"
+        ]
     },
     "packageManager": "yarn@3.3.1"
 }
