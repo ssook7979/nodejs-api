@@ -14,6 +14,10 @@ import User from '../src/user/User';
 import sequelize from '../src/config/database';
 import en from '../locales/en/translation.json';
 import ko from '../locales/ko/translation.json';
+import * as fs from 'fs';
+import * as path from 'path';
+import config from 'config';
+import { fail } from 'assert';
 
 let simulateSmtpFailure = false;
 
@@ -136,5 +140,50 @@ describe('User update', () => {
   test('returns 403 when token is not valid', async () => {
     const response = await putUser(5, null, { token: '1234' });
     expect(response.status).toBe(403);
+  });
+  test('saves the user image when update contains image as basd64', async () => {
+    const filePath = path.join('.', '__tests__', 'resource', 'test-png.png');
+    const fileInBase64 = fs.readFileSync(filePath, { encoding: 'base64' });
+    const savedUser = await addUser();
+    const validUpdate = { username: 'user1-updated', image: fileInBase64 };
+    await putUser(savedUser.id, validUpdate, {
+      auth: { email: 'user1@mail.com', password: 'P4ssword' },
+    });
+
+    const inDBUser = await User.findOne({ where: { id: savedUser.id } });
+    expect(inDBUser?.image).toBeTruthy();
+  });
+  test('returns success body having only id, username, email and image', async () => {
+    const filePath = path.join('.', '__tests__', 'resource', 'test-png.png');
+    const fileInBase64 = fs.readFileSync(filePath, { encoding: 'base64' });
+    const savedUser = await addUser();
+    const validUpdate = { username: 'user1-updated', image: fileInBase64 };
+    const response = await putUser(savedUser.id, validUpdate, {
+      auth: { email: 'user1@mail.com', password: 'P4ssword' },
+    });
+
+    const inDBUser = await User.findOne({ where: { id: savedUser.id } });
+    expect(Object.keys(response.body)).toEqual([
+      'id',
+      'username',
+      'email',
+      'image',
+    ]);
+  });
+  test('saves the user image to upload folder and store filename in user when update contains image as basd64', async () => {
+    const filePath = path.join('.', '__tests__', 'resource', 'test-png.png');
+    const fileInBase64 = fs.readFileSync(filePath, { encoding: 'base64' });
+    const savedUser = await addUser();
+    const validUpdate = { username: 'user1-updated', image: fileInBase64 };
+    await putUser(savedUser.id, validUpdate, {
+      auth: { email: 'user1@mail.com', password: 'P4ssword' },
+    });
+
+    const inDBUser = await User.findOne({ where: { id: savedUser.id } });
+    if (!inDBUser || !inDBUser.image) fail();
+    const uploadDir: string = config.get('uploadDir');
+    const profileDir: string = config.get('profileDir');
+    const fileImagePath = path.join('.', uploadDir, profileDir, inDBUser.image);
+    expect(fs.existsSync(fileImagePath)).toBe(true);
   });
 });

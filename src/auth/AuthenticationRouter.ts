@@ -33,6 +33,7 @@ router.post(
       id: user.id,
       username: user.username,
       token: await TokenService.createToken(user),
+      image: user.image,
     });
   }
 );

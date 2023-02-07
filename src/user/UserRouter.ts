@@ -93,8 +93,8 @@ router.put('/api/1.0/users/:id', async (req: Request, res: Response, next) => {
   if (!authenticatedUser || authenticatedUser.id !== parseInt(req.params.id)) {
     return next(new ForbiddenException('unauthorized_user_update'));
   }
-  await UserService.updateUser(req.params.id, req.body);
-  return res.send();
+  const user = await UserService.updateUser(req.params.id, req.body);
+  return res.send(user);
 });
 router.delete(
   '/api/1.0/users/:id',
@@ -135,9 +135,9 @@ const passwordResetTokenValidator = async (
   res: Response,
   next: any
 ) => {
-  const user = await User.findOne({
-    where: { passwordResetToken: req.body.passwordResetToken },
-  });
+  const user = await UserService.findByPasswordResetToken(
+    req.body.passwordResetToken
+  );
   if (!user) {
     return next(new ForbiddenException('unauthorized_password_reset'));
   }
@@ -164,6 +164,7 @@ router.put(
     if (!errors.isEmpty()) {
       return next(new ValidationExceptinon(errors.array()));
     }
+    await UserService.updatePassword(req.body);
     res.send();
   }
 );

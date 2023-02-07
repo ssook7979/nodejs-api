@@ -17,6 +17,7 @@ import en from '../locales/en/translation.json';
 import ko from '../locales/ko/translation.json';
 import User from '../src/user/User';
 import sequelize from '../src/config/database';
+import Token from '../src/auth/Token';
 
 let lastMail: string, server: SMTPServer;
 let simulateSmtpFailure = false;
@@ -66,7 +67,6 @@ const activeUser = {
 
 const addUser = async (user: any = { ...activeUser }) => {
   const hash = await bcrypt.hash(user.password, 10);
-  console.log(hash);
   user.password = hash;
   return await User.create(user);
 };
@@ -255,4 +255,69 @@ describe('Password Reset Request', () => {
       expect(resposne.body.validationErrors['password']).toBe(message);
     }
   );
+  test('returns 200 when valid password is sent with valid reset token', async () => {
+    const user = await addUser();
+    user.passwordResetToken = 'test-token';
+    await user.save();
+    const resposne = await putPasswordUpdate({
+      password: 'Passw0rd',
+      passwordResetToken: 'test-token',
+    });
+    expect(resposne.status).toBe(200);
+  });
+  test('updates the password in database when the request is valid', async () => {
+    const user = await addUser();
+    user.passwordResetToken = 'test-token';
+    await user.save();
+    const resposne = await putPasswordUpdate({
+      password: 'Passw0rd',
+      passwordResetToken: 'test-token',
+    });
+    const userInDB = await User.findOne({ where: { email: 'user1@mail.com' } });
+    if (!userInDB) fail();
+    expect(userInDB.password).not.toBe(user.password);
+  });
+  test('clears the reset token in database when the request is valid', async () => {
+    const user = await addUser();
+    user.passwordResetToken = 'test-token';
+    await user.save();
+    const resposne = await putPasswordUpdate({
+      password: 'Passw0rd',
+      passwordResetToken: 'test-token',
+    });
+    const userInDB = await User.findOne({ where: { email: 'user1@mail.com' } });
+    if (!userInDB) fail();
+    expect(userInDB.passwordResetToken).toBeFalsy();
+  });
+  test('activate and clears the activation token if the account is inactive', async () => {
+    const user = await addUser();
+    user.passwordResetToken = 'test-token';
+    user.activationToken = 'activation-token';
+    user.inactive = true;
+    await user.save();
+    const resposne = await putPasswordUpdate({
+      password: 'Passw0rd',
+      passwordResetToken: 'test-token',
+    });
+    const userInDB = await User.findOne({ where: { email: 'user1@mail.com' } });
+    if (!userInDB) fail();
+    expect(userInDB.activationToken).toBeFalsy();
+    expect(userInDB.inactive).toBe(false);
+  });
+  test('clears all tokens of user after valid password reset', async () => {
+    const user = await addUser();
+    user.passwordResetToken = 'test-token';
+    await user.save();
+    await Token.create({
+      token: 'token-1',
+      userId: user.id,
+      lastUsedAt: new Date(),
+    });
+    await putPasswordUpdate({
+      password: 'Passw0rd',
+      passwordResetToken: 'test-token',
+    });
+    const tokens = await Token.findAll({ where: { userId: user.id } });
+    expect(tokens.length).toBe(0);
+  });
 });

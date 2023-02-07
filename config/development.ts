@@ -15,4 +15,6 @@ export default {
       pass: 'f5hqVfYYtfN5a9M3zU',
     },
   },
+  uploadDir: 'uploads',
+  profileDir: 'profile',
 };

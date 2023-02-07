@@ -2,3 +2,5 @@ node_modules
 database.sqlite
 .yarn
 coverage
+uploads
+uploads-test

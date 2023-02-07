@@ -5,6 +5,9 @@ import AuthenticationRouter from './auth/AuthenticationRouter';
 import ErrorHandler from './error/ErrorHandler';
 import i18next from './config/i18next';
 import tokenAuthentication from './middleware/tokenAutentication';
+import * as FileService from '../src/file/FileService';
+
+FileService.createFolders();
 
 const app = express();
 

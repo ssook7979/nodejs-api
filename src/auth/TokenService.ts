@@ -1,4 +1,4 @@
-import randomString from '../shared/generator';
+import { randomString } from '../shared/generator';
 import User from '../user/User';
 import Token from './Token';
 import { Op } from 'sequelize';
@@ -45,10 +45,15 @@ const scheduledCleanup = () => {
   }, 60 * 60 * 1000);
 };
 
+const clearTokens = async (userId: number) => {
+  await Token.destroy({ where: { userId } });
+};
+
 export {
   createToken,
   verify,
   deleteToken,
   deleteTokenByUserId,
   scheduledCleanup,
+  clearTokens,
 };

@@ -14,4 +14,6 @@ export default {
       rejectUnauthorized: false,
     },
   },
+  uploadDir: 'uploads-test',
+  profileDir: 'profile',
 };
