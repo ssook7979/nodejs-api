@@ -20,8 +20,14 @@ const createFolders = () => {
 const saveProfileImage = (base64File: string) => {
   const filename = randomString(32);
   const filePath = path.join(profileFolder, filename);
-  fs.writeFileSync(filePath, base64File, { encoding: 'base64' });
-  return filename;
+  return new Promise<string>((resolve, reject) => {
+    fs.writeFile(filePath, base64File, 'base64', (error) => {
+      if (!error) {
+        resolve(filename);
+      } else {
+      }
+    });
+  });
 };
 
 export { createFolders, saveProfileImage };

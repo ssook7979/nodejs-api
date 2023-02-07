@@ -87,7 +87,7 @@ const updateUser = async (id: string, updatedBody: Partial<User>) => {
     user.username = updatedBody.username;
   }
   if (updatedBody.image) {
-    user.image = FileService.saveProfileImage(updatedBody.image) || '';
+    user.image = await FileService.saveProfileImage(updatedBody.image);
   }
   await user.save();
   return {
