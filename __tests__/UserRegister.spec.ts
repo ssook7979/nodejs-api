@@ -8,6 +8,7 @@ import {
   jest,
 } from '@jest/globals';
 import request from 'supertest';
+import config from 'config';
 import app from '../src/app';
 import User from '../src/user/User';
 import sequelize from '../src/config/database';
@@ -40,7 +41,7 @@ beforeAll(async () => {
     },
   });
 
-  server.listen(8587, '127.0.0.1');
+  server.listen(config.get('mail.port'), '127.0.0.1');
   await sequelize.sync().finally();
   jest.setTimeout(20000);
 });

@@ -48,9 +48,7 @@ beforeAll(async () => {
     },
   });
 
-  const emailConfig: any = config.get('mail');
-
-  server.listen(emailConfig.port, '127.0.0.1');
+  server.listen(config.get('mail.port'), '127.0.0.1');
   await sequelize.sync().finally();
   jest.setTimeout(20000);
 });
