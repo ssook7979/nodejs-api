@@ -17,17 +17,11 @@ const createFolders = () => {
   }
 };
 
-const saveProfileImage = (base64File: string) => {
+const saveProfileImage = async (base64File: string) => {
   const filename = randomString(32);
   const filePath = path.join(profileFolder, filename);
-  return new Promise<string>((resolve, reject) => {
-    fs.writeFile(filePath, base64File, 'base64', (error) => {
-      if (!error) {
-        resolve(filename);
-      } else {
-      }
-    });
-  });
+  fs.promises.writeFile(filePath, base64File, 'base64');
+  return filename;
 };
 
 export { createFolders, saveProfileImage };
