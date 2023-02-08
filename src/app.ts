@@ -21,7 +21,7 @@ const app = express();
 
 app.use(handle(i18next));
 
-app.use(json());
+app.use(json({ limit: '3mb' }));
 
 app.use(
   '/images',

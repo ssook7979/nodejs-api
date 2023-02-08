@@ -96,6 +96,14 @@ router.put(
     .bail()
     .isLength({ min: 4 })
     .withMessage('username_size'),
+  check('image').custom(async (imageAsBase64String) => {
+    if (!imageAsBase64String) return true;
+    const buffer = Buffer.from(imageAsBase64String, 'base64');
+    if (buffer.length > 2 * 1024 * 1024) {
+      throw new Error('profile_image_size');
+    }
+    return true;
+  }),
   async (req: Request, res: Response, next) => {
     const authenticatedUser = req.authenticatedUser;
     if (

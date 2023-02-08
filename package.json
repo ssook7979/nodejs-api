@@ -104,7 +104,7 @@
             "<rootDir>/config/",
             "<rootDir>/dist/"
         ],
-        "setupFilesAfterEnv":[
+        "setupFilesAfterEnv": [
             "<rootDir>/__tests__/test-cleanup.js"
         ]
     },
