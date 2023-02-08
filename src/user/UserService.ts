@@ -87,6 +87,7 @@ const updateUser = async (id: string, updatedBody: Partial<User>) => {
     user.username = updatedBody.username;
   }
   if (updatedBody.image) {
+    await FileService.deleteProfileImage(user.image);
     user.image = await FileService.saveProfileImage(updatedBody.image);
   }
   await user.save();
