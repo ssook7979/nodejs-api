@@ -11,5 +11,4 @@ afterAll(() => {
   for (const file of files) {
     fs.unlinkSync(path.join(profileFolder, file));
   }
-  console.log('FINISHED RUNNING POSTTEST');
 });
