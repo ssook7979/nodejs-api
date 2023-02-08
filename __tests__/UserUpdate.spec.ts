@@ -206,4 +206,25 @@ describe('User update', () => {
     const fileImagePath = path.join(profileFolder, firstImage);
     expect(fs.existsSync(fileImagePath)).toBe(false);
   });
+  test.each`
+    username | message             | language
+    ${null}  | ${en.username_null} | ${'en'}
+    ${'usr'} | ${en.username_size} | ${'en'}
+    ${'a'}   | ${en.username_size} | ${'en'}
+    ${null}  | ${ko.username_null} | ${'ko'}
+    ${'usr'} | ${ko.username_size} | ${'ko'}
+    ${'a'}   | ${ko.username_size} | ${'ko'}
+  `(
+    `returns bad request with $message when username is updated with $username when language is set to $language.`,
+    async ({ username, message, language }) => {
+      const savedUser = await addUser();
+      const response = await putUser(
+        savedUser.id,
+        { username },
+        { language, auth: { email: savedUser.email, password: 'P4ssword' } }
+      );
+      expect(response.status).toBe(400);
+      expect(response.body.validationErrors.username).toBe(message);
+    }
+  );
 });
