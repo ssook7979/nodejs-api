@@ -1,0 +1,23 @@
+{
+    "username_null": "Username cannot be null.",
+    "username_size": "Must have min 4 and max 32 characters.",
+    "email_null": "Email cannot be null.",
+    "email_invalid": "Email is not valid.",
+    "password_null": "Password cannot be null.",
+    "password_size": "Password must be at least 6 characters.",
+    "password_invalid": "Password must have at least 1 uppercase, 1 lowercase and 1 number.",
+    "user_create_success":"User created.",
+    "email_failure": "Email failure.",
+    "email_in_use": "Email in use.",
+    "account_activation_failure": "This account is either active or the token is invalid.",
+    "account_activation_success": "Account is activated.",
+    "validation_failure": "Validation failure.",
+    "user_not_found": "User not found.",
+    "authentication_failure": "Incorrect credentials.",
+    "inactive_authentication_failure":"Account is inactive.",
+    "unauthorized_user_update": "You are not authorized to update user.",
+    "unauthorized_user_delete": "You are not authorized to delete user.",
+    "email_not_inuse": "Email not found.",
+    "password_reset_request_success": "Check your e-amil for resetting new password.",
+    "unauthorized_password_reset": "You are not authorized to update password."
+}
