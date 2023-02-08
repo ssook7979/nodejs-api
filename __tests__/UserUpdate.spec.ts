@@ -69,8 +69,8 @@ const addUser = async (user = { ...activeUser }): Promise<any> => {
   return await User.create(user);
 };
 
-const readFileAsBase64 = () => {
-  const filePath = path.join('.', '__tests__', 'resource', 'test-png.png');
+const readFileAsBase64 = (filename = 'test-png.png') => {
+  const filePath = path.join('.', '__tests__', 'resource', filename);
   return fs.readFileSync(filePath, { encoding: 'base64' });
 };
 
@@ -228,12 +228,15 @@ describe('User update', () => {
     }
   );
   test('returns 200 when image size is exactly 2mb', async () => {
-    const fileWithSize2MB = 'a'.repeat(1024 * 1024 * 2);
-    const base64 = Buffer.from(fileWithSize2MB).toString('base64');
+    const testPng = readFileAsBase64();
+    const pngByte = Buffer.from(testPng, 'base64').length;
+    const twoMB = 1024 * 1024 * 2;
+    const filling = 'a'.repeat(twoMB - pngByte);
+    const fillBase64 = Buffer.from(filling).toString('base64');
     const savedUser = await addUser();
     const response = await putUser(
       savedUser.id,
-      { username: 'updated-user', image: fileWithSize2MB },
+      { username: 'updated-user', image: testPng + fillBase64 },
       { auth: { email: savedUser.email, password: 'P4ssword' } }
     );
     expect(response.status).toBe(200);
@@ -291,4 +294,25 @@ describe('User update', () => {
       expect(response.body.validationErrors.image).toBe(message);
     }
   );
+  //test.each`
+  //  file              | status
+  //  ${'test-gif.gif'} | ${'400'}
+  //  ${'test-pdf.pdf'} | ${'400'}
+  //  ${'test-txt.txt'} | ${'400'}
+  //`(
+  //  `returns $status when uploading $file as image`,
+  //  async ({ file, status }) => {
+  //    const fileInBase64 = readFileAsBase64();
+  //    const savedUser = await addUser();
+  //    const response = await putUser(
+  //      savedUser.id,
+  //      { image: fileInBase64 },
+  //      {
+  //        auth: { email: 'user1@mail.com', password: 'P4ssword' },
+  //      }
+  //    );
+  //
+  //    +expect(response.status).toBe(status);
+  //  }
+  //);
 });

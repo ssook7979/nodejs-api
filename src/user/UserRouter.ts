@@ -102,6 +102,9 @@ router.put(
     if (buffer.length > 2 * 1024 * 1024) {
       throw new Error('profile_image_size');
     }
+
+    //const type = await FileType.
+    //if (!type || type.mime !== 'image/png') throw new Error();
     return true;
   }),
   async (req: Request, res: Response, next) => {
