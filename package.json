@@ -103,6 +103,9 @@
         "testPathIgnorePatterns": [
             "<rootDir>/config/",
             "<rootDir>/dist/"
+        ],
+        "setupFilesAfterEnv":[
+            "<rootDir>/__tests__/test-cleanup.js"
         ]
     },
     "packageManager": "yarn@3.3.1"

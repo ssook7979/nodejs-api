@@ -34,13 +34,6 @@ beforeEach(async () => {
   await User.destroy({ truncate: true, cascade: true });
 });
 
-afterAll(async () => {
-  const files = fs.readdirSync(profileFolder);
-  for (const file of files) {
-    fs.unlinkSync(path.join(profileFolder, file));
-  }
-  jest.setTimeout(5000);
-});
 const activeUser = {
   username: 'user1',
   email: 'user1@mail.com',
