@@ -118,6 +118,12 @@ describe('Listing Users', () => {
     expect(response.body.page).toBe(0);
     expect(response.body.size).toBe(10);
   });
+  test('returns user page without logged in user when request has valid authentication', async () => {
+    await addUsers(11);
+    const token = await auth({ email: 'user1@mail.com', password: 'P4ssword' });
+    const response = await getUsers({ token });
+    expect(response.body.totalPages).toBe(1);
+  });
 });
 describe('Get User', () => {
   test('returns 404 when user not found', async () => {
