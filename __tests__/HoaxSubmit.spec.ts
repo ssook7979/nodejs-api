@@ -12,3 +12,9 @@ describe('Post hoax', () => {
     expect(response.status).toBe(401);
   });
 });
+
+describe('Post Hoax', () => {
+test('returns 401 when hoax post request has no authentication', async () => {
+    postHoax({})
+})
+})
