@@ -14,7 +14,7 @@ describe('Post hoax', () => {
 });
 
 describe('Post Hoax', () => {
-test('returns 401 when hoax post request has no authentication', async () => {
-    postHoax({})
-})
+  test('returns 201 when valid input is posted', async () => {
+      postHoax({})
+  })
 })
