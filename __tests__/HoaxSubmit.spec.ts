@@ -11,10 +11,8 @@ describe('Post hoax', () => {
     const response = await postHoax();
     expect(response.status).toBe(401);
   });
-});
-
-describe('Post Hoax', () => {
+  
   test('returns 201 when valid input is posted', async () => {
       postHoax({})
   })
-})
+});
